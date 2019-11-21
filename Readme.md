@@ -33,3 +33,15 @@
     * title, description
     * category
     * location/school/college
+	
+# Databases/Schema
+	* Books
+		-> Title
+		-> Author
+		-> Price
+		-> Description
+		-> Image
+	* User(will discuss later)
+	* Comments(Will discuss later)
+# Add new books
+	* newbooks.ejs

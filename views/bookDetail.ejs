@@ -1,0 +1,34 @@
+<% include partials/header %>
+
+<div class="row" style="margin:75px 50px 40px;">
+	<div class="col-lg-6" style="text-align:center; margin-bottom: 50px;">
+		<img src="<%= book.image %>" alt="..." class="img-thumbnail">
+	</div>
+	<div class="col-lg-6">
+		<h1 style="text-align:center;">
+			<%= book.title %>
+		</h1>
+		<h6 style="text-align:center;">By: <%= book.author %></h6>
+		<hr>
+		<p><%= book.description %></p>
+		<div style="text-align: right">
+			<form action="/books/<%= book._id %>/edit" method="GET"  style="display: inline-block">
+				<button type="submit" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i> Edit</button>
+			</form>
+			<form action="/books/<%= book._id %>?_method=DELETE" method="POST" style="display: inline-block">
+				<button type="submit" class="btn btn-sm btn-danger" style="margin-right:10px;"><i class="fa fa-trash"></i> Delete</button>
+			</form>
+		</div>
+		<br>
+		<br>
+		<hr>
+		<div style="float:left;">
+			<button class="btn btn-primary">Price: <%= book.price %></button>
+		</div>
+		<div style="float:right;">
+			<button class="btn btn-primary">Chat with (uploader)</button>
+		</div>
+	</div>
+</div>
+
+<% include partials/footer %>

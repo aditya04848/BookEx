@@ -1,0 +1,40 @@
+<% include partials/header %>
+
+<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px">
+	<form style="padding:15px 35px;" action="/books/<%= book._id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+		 <div class="form-group row">
+    		<label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
+			<div class="col">
+    			<input type="text" name="title" class="form-control" id="inputTitle" placeholder="Title" value="<%= book.title %>">
+			 </div>
+  		</div>
+  		<div class="form-group row">
+    		<label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
+			<div class="col">
+    			<input type="text" name="author"class="form-control" id="inputAuthor" placeholder="Author" value="<%= book.author %>">
+			</div>	
+  		</div>
+		<div class="form-group row">
+    		<label for="inputPrice" class="col-sm-2 col-form-label">Price</label>
+			<div class="col">
+    			<input type="text" name= "price" class="form-control" id="inputPrice" placeholder="Price" value="<%= book.price %>">
+			 </div>
+  		</div>
+		<div class="form-group row">
+			<label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
+    		<div class="col">
+        		<textarea class="form-control" name= "description" id="InputDescription" placeholder="Description"><%= book.description %></textarea>
+        	</div>
+  		</div>
+		<div class="form-group row">
+    		<label for="inputImage" class="col-sm-2 col-form-label">Image</label>
+			<div class="col">
+				<img src="/uploads/<%= book.image %>" style="height:200px; margin-bottom: 5px;">
+    			<input type="file" name = "image" class="form-control-file" id="inputImage" placeholder="Image" accept="image/*">
+			 </div>
+  		</div>
+		<button type="submit" class="btn btn-lg btn-primary" style="margin: 3px 42%">Submit</button>
+    </form>
+</div>
+
+<% include partials/header %>

@@ -1,2 +1,18 @@
 <% include partials/header %>
+<div class="container" style="border: 1px solid black ; margin:150px auto 0 auto; padding:20px; border-radius:10px">
+	google and facebook image will go here 
+</div>
+<div class="container" style="border: 1px solid black ; margin:10px auto 0 auto; padding:20px; border-radius:10px">
+	<form action="/signin" method="POST">
+	  <div class="form-group">
+		<label for="inputEmail">Email address</label>
+		<input type="email" name="username" class="form-control" id="inputEmail" placeholder="Enter email">
+	  </div>
+	  <div class="form-group">
+		<label for="inputPassword">Password</label>
+		<input type="password" name="password" class="form-control" id="inputPassword" placeholder="Password">
+	  </div>
+	  <button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+</div>
 <% include partials/footer %>

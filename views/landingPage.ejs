@@ -1,9 +1,13 @@
 <% include partials/header %>
 	<!-- 	Carousel	 -->
-
-<div class="mx-lg-auto" style="padding-left:0; padding-right:0;">		
+<div>
+	<h1 style="margin:150px auto 0 auto ;font-size:60px;text-align:center">
+		<strong>Welcome to Kitab Buddy</strong>
+    </h1>
+</div>
+<div class="container" style="padding-left:0; padding-right:0;margin-top:100px">		
 	<div class="bd-example">
-	  <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-ride="carousel">
+	  <div id="carouselExampleCaptions" class="carousel slide carousel-fade" data-ride="carousel" data-interval="4000">
 		<ol class="carousel-indicators">
 		  <li data-target="#carouselExampleCaptions" data-slide-to="0" class="active"></li>
 		  <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
@@ -24,7 +28,7 @@
 			</div>
 		  </div>
 		  <div class="carousel-item">
-			<img src="https://www.musicmagpie.co.uk/wp-content/uploads/2018/03/pexels-photo-775998.jpeg" class="d-block w-100" alt="...">
+			<img src="https://mtp.ottawasafetycouncil.ca/wp-content/uploads/2017/12/pexels-photo-733856.png" class="d-block w-100" alt="...">
 			<div class="carousel-caption d-none d-md-block" style="background-color:rgba(0, 0, 0, 0.5);"
 >
 			  <h1><strong>Lets build a better future together.</strong></h1>
@@ -48,8 +52,10 @@
 	<h1 style="margin-top:2%;">
 		<strong>So Let's Begin!</strong>
 	</h1>
-	<button type="button" class="btn btn-lg btn-warning" style="margin: 3% 10%">Lend Books</button>
-	<button type="button" class="btn btn-lg btn-primary" style="margin: 3% 10%">Get Books</button>
+	<form action="/books" method="GET">
+		<button type="submit" class="btn btn-lg btn-warning" formaction="/books/new" style="margin: 3% 10%; display: inline-block;">Lend Books</button>
+		<button type="submit" class="btn btn-lg btn-primary" style="margin: 3% 10%; display: inline-block;">Get Books</button>
+	</form>
 </div>
 
 <!-- App download links -->
