@@ -1,18 +1,107 @@
 <% include partials/header %>
-<div class="container" style="border: 1px solid black ; margin:150px auto 0 auto; padding:20px; border-radius:10px">
-	google and facebook image will go here 
-</div>
-<div class="container" style="border: 1px solid black ; margin:10px auto 0 auto; padding:20px; border-radius:10px">
+
+<!-- Navbar Begins -->
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+		  <a class="navbar-brand mb-0 h1" href="/">KitabBuddy</a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		  </button>
+
+		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+			  <ul class="navbar-nav mr-auto">
+				  <li class="nav-item my-auto active"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">All Books</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/books/new" style="margin: 0 10px;">Lend Books</a></li>
+				  <% if(currentUser != null) {%>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
+				  <% } %>
+			  </ul>
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/books" method="GET">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1"><i class="fa fa-search"></i></span>
+							</div>
+							<input type="text" name="search" class="form-control" placeholder="Search Books...">
+						</div>
+						<button class="btn btn-info my-2 my-sm-0" style="margin: 0 10px;">Search</button>
+					</form>
+				</li>
+				<% if (!currentUser) { %>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
+						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
+					</form>
+				</li>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signin" method="GET">
+						<button class="btn btn-outline-success my-2 my-sm-0" style="margin: 0 10px;">Sign In</button>
+					</form>
+				</li>
+				<% } else { %>
+				<li class="nav-item" style="text-align: center;">
+					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
+					<br>
+					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
+				</li>
+				<li class="nav-item my-auto" style="text-align: center;color:white;font-size: 24px;">
+					<a class="my-2 my-lg-0 mx-4" style="color: black;background-color: transparent;border: 0;" href="<%= currentUser._id.toString() %>/cart"><i class="fa fa-shopping-cart"></i></a>
+				</li>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
+						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Sign Out</button>
+					</form>
+				</li>
+				<% } %>
+			</ul>
+			
+		  </div>
+		</nav>
+
+<!-- End of Navbar -->
+
+<!-- 	form	 -->
+<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px; width: 400px;">
+	<h3 style="margin:40px auto 10px auto ;font-size:48px;text-align:center">
+		<strong>Sign IN</strong>
+    </h3>
+	<hr>
 	<form action="/signin" method="POST">
-	  <div class="form-group">
-		<label for="inputEmail">Email address</label>
-		<input type="email" name="username" class="form-control" id="inputEmail" placeholder="Enter email">
-	  </div>
-	  <div class="form-group">
-		<label for="inputPassword">Password</label>
-		<input type="password" name="password" class="form-control" id="inputPassword" placeholder="Password">
-	  </div>
-	  <button type="submit" class="btn btn-primary">Submit</button>
+		<div class="form-group row">
+			<div class="col input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text" id="basic-addon1"><i class="fa fa-at"></i></span>
+				</div>
+				<input type="email" name="username" class="form-control" id="inputEmail" placeholder="Email - ID">
+			 </div>
+	  	</div>
+		<div class="form-group row">
+			<div class="col input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text" id="basic-addon1"><i class="fa fa-lock"></i></span>
+				</div>
+				<input type="password" name="password" required class="form-control" id="inputEmail" placeholder="Password">	
+			 </div>
+	  	</div>	
+		
+		<button class="btn btn-primary btn-lg" type="submit" style="width: 100%">Submit</button>	
 	</form>
+	<div id="or" style="margin: 10px auto">OR</div>
+	<a class="btn btn-outline-dark" href="/signup/google" role="button" style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto;">
+		  <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+		  Login with Google
+	</a>
+	<br>
+	<a class="btn btn-outline-primary" href="/signup/facebook" role="button" style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto;">
+		  <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Facebook sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/214px-Facebook_f_logo_%282019%29.svg.png" />
+		  Login with Facebook
+	</a>
 </div>
+
+<!-- <a href="/signup/google">Google</a> -->
+<!-- <a href="/signup/facebook">Facebook</a> -->
 <% include partials/footer %>

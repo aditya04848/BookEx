@@ -1,0 +1,97 @@
+<% include partials/header %>
+
+<!-- Navbar Begins -->
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+		  <a class="navbar-brand mb-0 h1" href="/">KitabBuddy</a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		  </button>
+
+		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+			  <ul class="navbar-nav mr-auto">
+				  <li class="nav-item my-auto active"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">All Books</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/books/new" style="margin: 0 10px;">Lend Books</a></li>
+				  <% if(currentUser != null) {%>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
+				  <% } %>
+			  </ul>
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/books" method="GET">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1"><i class="fa fa-search"></i></span>
+							</div>
+							<input type="text" name="search" class="form-control" placeholder="Search Books...">
+						</div>
+						<button class="btn btn-info my-2 my-sm-0" style="margin: 0 10px;">Search</button>
+					</form>
+				</li>
+				<% if (!currentUser) { %>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
+						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
+					</form>
+				</li>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signin" method="GET">
+						<button class="btn btn-outline-success my-2 my-sm-0" style="margin: 0 10px;">Sign In</button>
+					</form>
+				</li>
+				<% } else { %>
+				<li class="nav-item" style="text-align: center;">
+					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
+					<br>
+					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
+				</li>
+				<li class="nav-item my-auto" style="text-align: center;color:white;font-size: 24px;">
+					<a class="my-2 my-lg-0 mx-4" style="color: black;background-color: transparent;border: 0;" href="<%= currentUser._id.toString() %>/cart"><i class="fa fa-shopping-cart"></i></a>
+				</li>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
+						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Sign Out</button>
+					</form>
+				</li>
+				<% } %>
+			</ul>
+			
+		  </div>
+		</nav>
+
+<!-- End of Navbar -->
+
+<!-- 	form	 -->
+<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px; width: 400px;">
+	<h3 style="margin:40px auto 10px auto ;font-size:48px;text-align:center">
+		<strong>Leave a Rating</strong>
+    </h3>
+	<form action="/books/<%= record._id %>/comments" method="POST">
+		<div class="form-group row">
+			 <section style="margin: 10px auto;">
+   
+				  <ul class="rate-area" style="padding-left: 0;">
+					  <hr>
+				  <input type="radio" id="5-star" name="rating" value="5"><label for="5-star" title="Amazing">5 stars</label>
+				  <input type="radio" id="4-star" name="rating" value="4"><label for="4-star" title="Good">4 stars</label>
+				  <input type="radio" id="3-star" name="rating" value="3"><label for="3-star" title="Average">3 stars</label>
+				  <input type="radio" id="2-star" name="rating" value="2"><label for="2-star" title="Not Good">2 stars</label>
+				  <input type="radio" id="1-star" name="rating" value="1"><label for="1-star" title="Bad">1 star</label>
+			  </ul>
+			  </section>
+			<textarea class="form-control" name= "comment" id="InputDescription" placeholder="Add some Comment"style="
+    margin:  10px 20px;
+    height: 100px;
+"></textarea>
+		</div>
+		
+		<button class="btn btn-primary btn-lg" type="submit" style="width: 100%; margin: 20px auto;">Submit</button>	
+	</form>
+</div>
+
+<!-- <a href="/signup/google">Google</a> -->
+<!-- <a href="/signup/facebook">Facebook</a> -->
+<% include partials/footer %>

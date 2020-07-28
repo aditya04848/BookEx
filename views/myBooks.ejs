@@ -1,0 +1,108 @@
+<% include partials/header %>
+
+<body>
+	
+
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: rgba(255, 255, 255, 0.85);">
+		  <a class="navbar-brand mb-0 h1" href="/">KitabBuddy</a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		  </button>
+
+		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+			  <ul class="navbar-nav mr-auto">
+				  <li class="nav-item my-auto"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">All Books</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/books/new" style="margin: 0 10px;">Lend Books</a></li>
+				  <% if(currentUser != null) {%>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
+				  <% } %>
+			  </ul>
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/books" method="GET">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1"><i class="fa fa-search"></i></span>
+							</div>
+							<input type="text" name="search" class="form-control" placeholder="Search Books...">
+						</div>
+						<button class="btn btn-info my-2 my-sm-0" style="margin: 0 10px;">Search</button>
+					</form>
+				</li>
+				<% if (!currentUser) { %>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
+						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
+					</form>
+				</li>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signin" method="GET">
+						<button class="btn btn-outline-success my-2 my-sm-0" style="margin: 0 10px;">Sign In</button>
+					</form>
+				</li>
+				<% } else { %>
+				<li class="nav-item" style="text-align: center;">
+					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
+					<br>
+					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
+				</li>
+				<li class="nav-item my-auto" style="text-align: center;color:white;font-size: 24px;">
+					<a class="my-2 my-lg-0 mx-4" style="color: black;background-color: transparent;border: 0;" href="<%= currentUser._id.toString() %>/cart"><i class="fa fa-shopping-cart"></i></a>
+				</li>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
+						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Sign Out</button>
+					</form>
+				</li>
+				<% } %>
+			</ul>
+			
+		  </div>
+		</nav>
+
+<!-- End of Navbar -->
+	
+	<div class="card-deck" style="margin: 75px 10px;">
+	<% var count = 0;records.forEach(function(row){ if(row.uploader == currentUser.username) {  count++;%>
+	<div class="col-lg-3 col-md-6" style="margin-bottom: 15px;">
+  <div class="card books">
+	  <div class="card-img-top img-fluid books-img" style="width:100%;height: 350px;overflow: hidden;display:flex;padding: 7px;">
+		<img class="card-img-top img-fluid" src="<%= row.image.replace((row.image).split('/')[(row.image).split('/').length - 2], 'w_300,f_auto') %>" alt="Card image cap" style="object-fit: contain;">
+	  </div>
+	<div class="card-body books-body"	style="">
+		<% if(row.title.length > 25) { %>
+	  		<h4 class="card-title" style="text-align: center;"><%= row.title%></h4>
+		<% } else { %>
+			<h4 class="card-title" style="text-align: center;"><%= row.title%></h4>
+		<% } %>
+
+		<p style="text-align:center"><bold>Author: <%= row.author %></bold></p>
+
+		<p style="font-size: 18px;font-weight: bold;text-align: center;"><i class="fa fa-inr"></i> <%= row.price %></p>
+
+		<% if(row.description.length > 92) { %>
+			<p class="card-text"><%= row.description.substring(0, 70)%> ....</p>
+		<% } else { %>
+			<p class="card-text"><%= row.description%></p>
+		<% } %>
+		<form action="/books/<%= row._id %>" method="GET" style="text-align:center;">
+			<button type="submit" class="btn btn-sm btn-light stretched-link" style="background-color: rgba(277, 277, 277, 0.9)"><i class="fa fa-info"></i> View More</button>
+		</form>
+	</div>
+		</div>
+  </div>
+	<% }}); if(count == 0) {%>
+		<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px; width: 400px; text-align: center;">
+	<img src="https://cdn.iconscout.com/icon/free/png-512/data-not-found-1965034-1662569.png" style="
+    width: 300px;
+    height: auto;
+">
+	<hr>
+	<p>It seems like you have not uploaded any book.</p>
+			<a href='/books/new' class="btn btn-outline-primary"style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto;">Lend a book now!</a>
+</div>
+	<% } %>
+</div>
+	
+<% include partials/footer %>

@@ -1,44 +1,111 @@
 <% include partials/header %>
-<!-- 	form	 -->
-<!--    -> Title
-		-> Author
-		-> Price
-		-> Description
-		-> Image -->
-<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px">
-	<form style="padding:15px 35px;" action="/books" method="POST" enctype="multipart/form-data">
-		 <div class="form-group row">
-    		<label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
-			<div class="col">
-    			<input type="text" name="newBook[title]" class="form-control" id="inputTitle" placeholder="Title">
-			 </div>
-  		</div>
-  		<div class="form-group row">
-    		<label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
-			<div class="col">
-    			<input type="text" name="newBook[author]"class="form-control" id="inputAuthor" placeholder="Author">
-			</div>	
-  		</div>
-		<div class="form-group row">
-    		<label for="inputPrice" class="col-sm-2 col-form-label">Price</label>
-			<div class="col">
-    			<input type="text" name= "newBook[price]" class="form-control" id="inputPrice" placeholder="Price">
-			 </div>
-  		</div>
-		<div class="form-group row">
-			<label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
-    		<div class="col">
-        		<textarea class="form-control" name= "newBook[description]" id="InputDescription" placeholder="Description"></textarea>
-        	</div>
-  		</div>
-		<div class="form-group row">
-    		<label for="inputImage" class="col-sm-2 col-form-label">Image</label>
-			<div class="col">
-    			<input type="file" name = "image" class="form-control-file" id="inputImage" placeholder="Image" accept="image/*">
-			 </div>
-  		</div>
-		<button type="submit" class="btn btn-lg btn-primary" style="margin: 3px 42%">Submit</button>
-    </form>
-</div>
+		<!-- Navbar Begins -->
+
+<body>
+
+		<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+				  <a class="navbar-brand mb-0 h1" href="/">KitabBuddy</a>
+				  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				  </button>
+
+				  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+					  <ul class="navbar-nav mr-auto">
+						  <li class="nav-item my-auto"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
+						  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">All Books</a></li>
+						  <li class="nav-item my-autoj active"><a class="nav-link" href="/books/new" style="margin: 0 10px;">Lend Books</a></li>
+				  <% if(currentUser != null) {%>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
+				  <% } %>
+					  </ul>
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item">
+							<form class="form-inline my-2 my-lg-0" action="/books" method="GET">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="basic-addon1"><i class="fa fa-search"></i></span>
+									</div>
+									<input type="text" name="search" class="form-control" placeholder="Search Books...">
+								</div>
+								<button class="btn btn-info my-2 my-sm-0" style="margin: 0 10px;">Search</button>
+							</form>
+						</li>
+						<% if (!currentUser) { %>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
+						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
+					</form>
+				</li>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signin" method="GET">
+						<button class="btn btn-outline-success my-2 my-sm-0" style="margin: 0 10px;">Sign In</button>
+					</form>
+				</li>
+				<% } else { %>
+				<li class="nav-item" style="text-align: center;">
+					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
+					<br>
+					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
+				</li>
+				<li class="nav-item my-auto" style="text-align: center;color:white;font-size: 24px;">
+					<a class="my-2 my-lg-0 mx-4" style="color: black;background-color: transparent;border: 0;" href="<%= currentUser._id.toString() %>/cart"><i class="fa fa-shopping-cart"></i></a>
+				</li>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
+						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Sign Out</button>
+					</form>
+				</li>
+				<% } %>
+					</ul>
+
+				  </div>
+				</nav>
+
+		<!-- End of Navbar -->
+
+		<!-- 	form	 -->
+		<!--    -> Title
+				-> Author
+				-> Price
+				-> Description
+				-> Image -->
+			<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px">
+				<form style="padding:15px 35px;" action="/books" method="POST" enctype="multipart/form-data">
+					 <div class="form-group row">
+						<label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
+						<div class="col">
+							<input type="text" name="newBook[title]" class="form-control" id="inputTitle" placeholder="Title">
+						 </div>
+					</div>
+					<div class="form-group row">
+						<label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
+						<div class="col">
+							<input type="text" name="newBook[author]"class="form-control" id="inputAuthor" placeholder="Author">
+						</div>	
+					</div>
+					<div class="form-group row">
+						<label for="inputPrice" class="col-sm-2 col-form-label">Price</label>
+						<div class="col">
+							<input type="text" name= "newBook[price]" class="form-control" id="inputPrice" placeholder="Price">
+						 </div>
+					</div>
+					<div class="form-group row">
+						<label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
+						<div class="col">
+							<textarea class="form-control" name= "newBook[description]" id="InputDescription" placeholder="Description"></textarea>
+						</div>
+					</div>
+					<div class="form-group row">
+						<label for="inputImage" class="col-sm-2 col-form-label">Image</label>
+						<div class="col">
+							<input type="file" name = "image" class="form-control-file" id="inputImage" placeholder="Image" accept="image/*">
+						 </div>
+					</div>
+					<p style="font-size: 12px;">
+						<i class="fa fa-exclamation-triangle" style="color:red;"></i> <strong>Please Note:</strong> Clicking the submit button will send your entry about the product to our team. It will be uploaded on the website after the verification of the details provided is done.
+					</p>
+					<button type="submit" class="btn btn-lg btn-primary" style="margin: 3px 42%">Submit</button>
+				</form>
+			</div>
 
 <% include partials/footer %>
