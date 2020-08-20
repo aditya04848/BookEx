@@ -49,7 +49,7 @@
 					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
 				</li>
 				<li class="nav-item my-auto" style="text-align: center;color:white;font-size: 24px;">
-					<a class="my-2 my-lg-0 mx-4" style="color: black;background-color: transparent;border: 0;" href="<%= currentUser._id.toString() %>/cart"><i class="fa fa-shopping-cart"></i></a>
+					<a class="my-2 my-lg-0 mx-4" style="color: black;background-color: transparent;border: 0;" href="/<%= currentUser._id.toString() %>/cart"><i class="fa fa-shopping-cart"></i></a>
 				</li>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
@@ -70,7 +70,7 @@
     </h4>
 	<hr>
 	<p>
-		<strong>Hello there!</strong> Just a bit away from buying this item. Just make sure that clicking the <strong style="color: green;">Accept</strong> button will deliver the uploader a mail with your necessary contact details. If you are not willing to do this you can always <strong style="color: red;">Decline</strong>.
+		<strong>Hello there!</strong> Just a bit away from buying this item. Just make sure that clicking the <strong style="color: green;">Accept</strong> button will deliver the uploader a mail with your necessary contact details. If you are not willing to buy you can always <strong style="color: red;">Decline</strong>.
 	</p>
 	<a class="btn btn-outline-success btn-lg" style="margin: 20px 120px;" href='/books/<%= records._id %>/accepted'>Accept</a>
 	<a class="btn btn-outline-danger btn-lg" style="margin: 20px 90px;" href='/books/<%= records._id %>'>Decline</a>

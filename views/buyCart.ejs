@@ -12,8 +12,8 @@
 
 		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 			  <ul class="navbar-nav mr-auto">
-				  <li class="nav-item my-auto active"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
-				  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">All Books</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
+				  <li class="nav-item my-auto active"><a class="nav-link" href="/books" style="margin: 0 10px;">All Books</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/books/new" style="margin: 0 10px;">Lend Books</a></li>
 				  <% if(currentUser != null) {%>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
@@ -64,44 +64,16 @@
 
 <!-- End of Navbar -->
 
-<!-- 	form	 -->
-<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px; width: 400px;">
-	<h3 style="margin:40px auto 10px auto ;font-size:48px;text-align:center">
-		<strong>Sign IN</strong>
-    </h3>
+<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px; width: 700px;">
+	<h4 style="margin:40px auto 10px auto ;font-size:30px;text-align:center">
+		<strong>Please read carefully before accepting.</strong>
+    </h4>
 	<hr>
-	<form action="/signin" method="POST">
-		<div class="form-group row">
-			<div class="col input-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1"><i class="fa fa-at"></i></span>
-				</div>
-				<input type="email" name="username" class="form-control" id="inputEmail" placeholder="Email - ID">
-			 </div>
-	  	</div>
-		<div class="form-group row">
-			<div class="col input-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1"><i class="fa fa-lock"></i></span>
-				</div>
-				<input type="password" name="password" required class="form-control" id="inputEmail" placeholder="Password">	
-			 </div>
-	  	</div>	
-		
-		<button class="btn btn-primary btn-lg" type="submit" style="width: 100%">Submit</button>	
-	</form>
-	<div id="or" style="margin: 10px auto">OR</div>
-	<a class="btn btn-outline-dark" href="/signup/google" role="button" style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto;">
-		  <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
-		  Login with Google
-	</a>
-	<br>
-	<a class="btn btn-outline-primary" href="/signup/facebook" role="button" style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto;">
-		  <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Facebook sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/214px-Facebook_f_logo_%282019%29.svg.png" />
-		  Login with Facebook
-	</a>
+	<p>
+		<strong>Hello there!</strong> Just a bit away from buying the items in your Cart. Just make sure that clicking the <strong style="color: green;">Accept</strong> button will deliver the uploader of book a mail with your necessary contact details. If you are not willing to buy you can always <strong style="color: red;">Decline</strong>.
+	</p>
+	<a class="btn btn-outline-success btn-lg" style="margin: 20px 120px;" href='/<%= currentUser._id %>/accepted'>Accept</a>
+	<a class="btn btn-outline-danger btn-lg" style="margin: 20px 90px;" href='/<%= currentUser._id %>/cart'>Decline</a>
 </div>
 
-<!-- <a href="/signup/google">Google</a> -->
-<!-- <a href="/signup/facebook">Facebook</a> -->
 <% include partials/footer %>

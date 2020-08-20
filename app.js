@@ -68,8 +68,12 @@ function isLoggedIn(req, res, next) {
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'kitabbuddy1234@gmail.com',
+    user: 'kitabbuddy1234',
     pass: 'kitab1234'
+  },
+	tls: {
+    // do not fail on invalid certs
+    rejectUnauthorized: false
   }
 });
 passport.use(new LocalStrategy(User.authenticate()));
@@ -244,29 +248,44 @@ app.get('/signout', function(req,res){
 });
 //======Books Route=======
 //Main book page Route
-app.get('/books',function(req, res){ 
+
+app.get('/books', function(req, res) {
+	res.redirect("/books/page/1");
+});
+
+app.get('/books/page/:page',function(req, res){ 
+	var perPage = 8
+    var page = req.params.page || 1
 	if(req.query.search){
 		//Search query using escapeRegex
 		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-		var booksData = Book.find({title : regex});
+		var booksData = Book.find({title : regex})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
 		booksData.exec(function(err, data){
-			if(err) {
-				console.log(err);
-			} else {
-				res.render('mainPage', {records: data});
-			}
+			Book.count().exec(function(err, count) {
+				if(err) {
+					console.log(err);
+				} else {
+					res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage)});
+				}
+			});
 		});	
 	}
 	else{
 		//Show all data from database
-		var booksData = Book.find({});
+		var booksData = Book.find({})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
 		booksData.exec(function(err, data){
-			if(err) {
-				console.log(err);
-			} else {
-				res.render('mainPage', {records: data});
-			}
-		});
+			Book.count().exec(function(err, count) {
+				if(err) {
+					console.log(err);
+				} else {
+					res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage)});
+				}
+			});
+		});	
 	}
 });
 // New Book Route
@@ -700,6 +719,63 @@ app.get('/:id1/cart/:id2', function(req, res){
 		}
 	});
 });
+
+// Cart Buy Implementation
+app.get('/:id/buy', function(req, res) {
+	res.render('buyCart');
+});
+
+app.get('/:id/accepted', function(req, res) {
+	User.findById(req.params.id, function(err, user){
+		if(err)
+			console.log(err);
+		user.cart.forEach(function(book_id, index){
+			Book.findById(book_id, function(err, book){
+				if(err)
+					console.log(err);
+				const mailOptions = {
+                  from: '"KitabBuddy Admin" <kitabbuddy1234@gmail.com>',
+                  to: book.uploader,
+                  subject: 'YAY!! You got a customer!',
+                  html: "Hello there! Hope you are having a good day.<br>Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer.<br><strong>Best of Luck!</strong><br>The user deatils are provided below: <br><hr>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+"<br>Email ID: "+req.user.doc.username+"<br>Phone Number: "+req.user.doc.mobileno+"<br><h3>Please delete your book from the site once you have sold it.</h3>"
+                };
+				 transporter.sendMail(mailOptions, function(error, info){
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    console.log('Email sent: ' + info.response);
+                  }
+                });
+			});
+		});	
+		user.cart.splice(0, user.cart_items);
+		user.cart_items = 0;
+		user.total_price = 0;
+		user.save()
+	});
+	res.redirect('/');
+});
+
+// Pagination
+// app.get('/products/:page', function(req, res, next) {
+//     var perPage = 20;
+//     var page = req.params.page || 1;
+
+//     Book
+//         .find({})
+//         .skip((perPage * page) - perPage)
+//         .limit(perPage)
+//         .exec(function(err, book) {
+//             Book.count().exec(function(err, count) {
+//                 if (err) return next(err)
+//                 res.render('/books', {
+//                     book: book,
+//                     current: page,
+//                     pages: Math.ceil(count / perPage)
+//                 });
+//             });
+//         });
+// });
  
 //====== END OF ROUTES =====
 //start server

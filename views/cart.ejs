@@ -14,7 +14,7 @@
 		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 			  <ul class="navbar-nav mr-auto">
 				  <li class="nav-item my-auto"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
-				  <li class="nav-item my-auto active"><a class="nav-link" href="/books" style="margin: 0 10px;">All Books</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">All Books</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/books/new" style="margin: 0 10px;">Lend Books</a></li>
 				  <% if(currentUser != null) {%>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
@@ -50,7 +50,7 @@
 					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
 				</li>
 				<li class="nav-item my-auto" style="text-align: center;color:white;font-size: 24px;">
-					<a class="my-2 my-lg-0 mx-4" style="color: black;background-color: transparent;border: 0;" href="<%= currentUser._id.toString() %>/cart"><i class="fa fa-shopping-cart"></i></a>
+					<a class="my-2 my-lg-0 mx-4" style="color: black;background-color: transparent;border: 0;" href="/<%= currentUser._id.toString() %>/cart"><i class="fa fa-shopping-cart"></i></a>
 				</li>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
@@ -79,7 +79,6 @@
 		
 		<% for(const book of books.cart) {%>
 		<div style="width: 100%; height: auto;">
-<!-- 	Image		 -->
 			<div style="padding: 10px; height: 100%; width: 20%; display: inline-block; text-align:center;">
 				<img src="<%= book.image.replace((book.image).split('/')[(book.image).split('/').length - 2], 'w_500,f_auto') %>" alt="..." class="img-thumbnail" style="object-fit: contain; height: auto; margin: 10px;">
 			</div>	
@@ -102,6 +101,12 @@
 		</div>
 		<hr>
 		<% } %>
+		<% if(currentUser.cart_items!=0) { %>
+		<div style="float:right;">
+			<a href= '/<%= currentUser._id %>/buy' class="btn btn-outline-success">Buy Now!</a>
+		</div>
+		<%}%>
 	</div>
+	
 
 <% include partials/footer %>
