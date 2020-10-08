@@ -250,24 +250,34 @@ app.get('/signout', function(req,res){
 //Main book page Route
 
 app.get('/books', function(req, res) {
-	res.redirect("/books/page/1");
+	if(req.query.search) {
+		var string = encodeURIComponent(req.query.search);
+		// console.log(req.query.search);
+		res.redirect("/books/page/1/?search=" + string)
+	}
+	else {
+		res.redirect("/books/page/1");
+	}
 });
 
 app.get('/books/page/:page',function(req, res){ 
-	var perPage = 8
+	var perPage = 2
     var page = req.params.page || 1
 	if(req.query.search){
 		//Search query using escapeRegex
 		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+		var book_data = Book.find({title: regex});
 		var booksData = Book.find({title : regex})
         .skip((perPage * page) - perPage)
         .limit(perPage);
 		booksData.exec(function(err, data){
-			Book.count().exec(function(err, count) {
+			book_data.count().exec(function(err, count) {
 				if(err) {
 					console.log(err);
 				} else {
-					res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage)});
+					var string = encodeURIComponent(req.query.search);
+					res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+					// console.log(data);
 				}
 			});
 		});	
@@ -282,7 +292,8 @@ app.get('/books/page/:page',function(req, res){
 				if(err) {
 					console.log(err);
 				} else {
-					res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage)});
+					var string = "";
+					res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
 				}
 			});
 		});	
@@ -648,33 +659,33 @@ app.post('/books/:id/comments', function(req,res){
 // Cart Route
 
 app.post('/books/:id/cart', function(req, res){
-	if(req.user.doc==null)
-	{
-		User.findById(req.user._id, function(err, user){
-			if(err)
-				console.log(err);
-			Book.findById(req.params.id, function(err, book){
-				user.cart.push(book);
-				user.cart_items = user.cart_items + 1;
-				user.total_price = user.total_price + parseInt(book.price);
-				user.save();
-				res.redirect('/books/'+book._id.toString());
+		if(req.user.doc==null)
+		{
+			User.findById(req.user._id, function(err, user){
+				if(err)
+					console.log(err);
+				Book.findById(req.params.id, function(err, book){
+					user.cart.push(book);
+					user.cart_items = user.cart_items + 1;
+					user.total_price = user.total_price + parseInt(book.price);
+					user.save();
+					res.redirect('/books/'+book._id.toString());
+				});
 			});
-		});
-	}
-	else{
-		User.findById(req.user.doc._id, function(err, user){
-			if(err)
-				console.log(err);
-			Book.findById(req.params.id, function(err, book){
-				user.cart.push(book);
-				user.cart_items = user.cart_items + 1;
-				user.total_price = user.total_price + parseInt(book.price);
-				user.save();
-				res.redirect('/books/'+book._id.toString());
+		}
+		else{
+			User.findById(req.user.doc._id, function(err, user){
+				if(err)
+					console.log(err);
+				Book.findById(req.params.id, function(err, book){
+					user.cart.push(book);
+					user.cart_items = user.cart_items + 1;
+					user.total_price = user.total_price + parseInt(book.price);
+					user.save();
+					res.redirect('/books/'+book._id.toString());
+				});
 			});
-		});
-	}
+		}
 });
 
 app.get('/:id/cart', function(req, res){
@@ -723,6 +734,7 @@ app.get('/:id1/cart/:id2', function(req, res){
 // Cart Buy Implementation
 app.get('/:id/buy', function(req, res) {
 	res.render('buyCart');
+
 });
 
 app.get('/:id/accepted', function(req, res) {
