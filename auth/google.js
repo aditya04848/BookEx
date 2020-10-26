@@ -16,7 +16,10 @@ passport.use(new GoogleStrategy({
     callbackURL: "https://kitab-buddy.run-us-west2.goorm.io/signup/google/callback"
   },
   function(accessToken, refreshToken, profile, done) {
+	console.log(refreshToken);
        User.findOrCreate({ username: profile._json.email }, { 
+           accessToken: accessToken,
+		   refreshToken: refreshToken,
 		   username: profile._json.email,
 		   firstname: profile._json.given_name,
 		   lastname: profile._json.family_name,

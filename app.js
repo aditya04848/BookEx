@@ -21,7 +21,12 @@ var express                     = require("express"),
 	Book						= require('./models/Book'),
 	Comment						= require('./models/Comment'),
 	Rating						= require('./models/Rating'),
-	Cart						= require('./models/Cart');
+	Cart						= require('./models/Cart'),
+	{ google }					= require('googleapis'),
+	axios 						= require('axios'),
+	querystring					= require('querystring'),
+	fetch 						= require('node-fetch'),
+	async 						= require('async');
 mongoose.connect("mongodb://localhost:27017/ualu_app", { useNewUrlParser: true, useUnifiedTopology: true });
 app.use(express.static("assets"));
 app.use(methodOverride('_method'));
@@ -119,6 +124,14 @@ var imageFilter = function (req, file, cb) {
     cb(null, true);
 };
 var upload = multer({ storage: storage, fileFilter: imageFilter});
+var pdfFilter = function (req, file, cb) {
+    // accept image files only
+    if (!file.originalname.match(/\.(pdf|xlsx|docx|doc)$/i)) {
+        return cb(new Error('Only PDF/Excel/Word files are allowed!'), false);
+    }
+    cb(null, true);
+};
+var pdfupload = multer({ storage: storage, fileFilter: pdfFilter});
 
 cloudinary.config({ 
   cloud_name: 'dvucpfyhm', 
@@ -146,6 +159,9 @@ app.get('/', function(req, res){
 //=====AUTH Routes=====
 // Sign Up Routes
 app.get('/signup', function(req,res){
+	res.render('signUpPage');
+});
+app.get('/about-us', function(req, res){
 	res.render('signUpPage');
 });
 app.get('/signup/detail', function(req,res){
@@ -506,7 +522,7 @@ app.get('/secretkitab04848/:id/accept', function(req, res) {
 
 // Google Signup Routers
 app.get('/signup/google',
-  passportGoogle.authenticate('google', { scope: ["email profile"] }));
+  passportGoogle.authorize('google', { scope: ["email profile https://www.googleapis.com/auth/drive"],  accessType: 'offline', prompt: 'consent' }));
 
 app.get('/signup/google/callback',
   passportGoogle.authenticate('google', { failureRedirect: '/signup' }),
@@ -788,7 +804,110 @@ app.get('/:id/accepted', function(req, res) {
 //             });
 //         });
 // });
- 
+
+// Ebooks Route
+app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
+	
+	// const oauth2Client = new google.auth.OAuth2();
+	
+	// const getAccessToken = async refreshToken => {
+	//   try {
+	// 	const accessTokenObj = await axios.post(
+	// 	  'https://accounts.google.com/o/oauth2/token',
+	// 	  querystring.stringify({
+	// 		refresh_token: req.user.doc.refreshToken,
+	// 		client_id: "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
+	// 		client_secret: "bcNyHqPiFtsXUpTDUwme213T",
+	// 		grant_type: 'refresh_token'
+	// 	  })
+	// 	);
+	// 	return accessTokenObj.data.access_token;
+	//   } catch (err) {
+	// 	  console.log("Error ->>>");
+	// 	console.log(err);
+	//   }
+	// };
+	
+	// oauth2Client.setCredentials({'access_token': getAccessToken});
+	
+	let tokenDetails = await fetch("https://accounts.google.com/o/oauth2/token", {
+		"method": "POST",
+		"body": JSON.stringify({
+			"client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
+			"client_secret": "bcNyHqPiFtsXUpTDUwme213T",
+			"refresh_token": req.user.doc.refreshToken,
+			"grant_type": "refresh_token",
+		})
+	});
+	tokenDetails = await tokenDetails.json();
+	const accessToken = tokenDetails.access_token;
+	
+	const oauth2Client = new google.auth.OAuth2();
+	oauth2Client.setCredentials({'access_token': accessToken});
+	
+	const drive = google.drive({
+		version: 'v3',
+		auth: oauth2Client
+	});
+	let { filename, mimetype, path } = req.file;
+	let stream = require('stream');
+    let fileObject = req.file;
+    let bufferStream = new stream.PassThrough();
+    bufferStream.end(fileObject.buffer);
+
+
+	drive.files.create({
+		requestBody: {
+			name: filename,
+			mimeType: mimetype,
+			fields: 'id'
+		},
+		media: {
+			mimeType: mimetype,
+			body: fs.createReadStream(path)
+		}}, 
+		function(err, file_uploaded){
+			if(err) console.log(err);
+			else{ 
+				// change file permissions
+				console.log(file_uploaded.data.id);
+				var fileId = file_uploaded.data.id;
+				var permissions = [
+				  {
+					'type': 'anyone',
+					'role': 'writer'
+				  }
+				];
+				// Using the NPM module 'async'
+				async.eachSeries(permissions, function (permission, permissionCallback) {
+				  drive.permissions.create({
+					resource: permission,
+					fileId: fileId,
+					fields: 'id',
+				  }, function (err, res) {
+					if (err) {
+					  // Handle error...
+					  console.error(err);
+					  permissionCallback(err);
+					} else {
+					  console.log('Permission ID: ', res.id)
+					  permissionCallback();
+					}
+				  });
+				}, function (err) {
+				  if (err) {
+					// Handle error
+					console.error(err);
+				  } else {
+					// All permissions inserted
+					  
+				res.redirect('/books');
+				  }
+				});
+			}
+		});
+	});
+
 //====== END OF ROUTES =====
 //start server
 app.listen(8080, function(){
