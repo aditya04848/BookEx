@@ -20,7 +20,8 @@ var UserSchema = new mongoose.Schema({
 		ref : "Book"
 	}],
 	cart_items: {type: Number, default: 0},
-	total_price: {type: Number, default: 0}
+	total_price: {type: Number, default: 0},
+	folder_id: {type: String, default: null}
 });
 
 UserSchema.plugin(passportLocalMongoose);

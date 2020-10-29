@@ -1,0 +1,99 @@
+<% include partials/header %>
+		<!-- Navbar Begins -->
+
+<body>
+		<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+				  <a class="navbar-brand mb-0 h1" href="/">KitabBuddy</a>
+				  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				  </button>
+
+				  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+					  <ul class="navbar-nav mr-auto">
+						  <li class="nav-item my-auto"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
+						  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">All Books</a></li>
+						  <li class="nav-item my-autoj active"><a class="nav-link" href="/books/new" style="margin: 0 10px;">Lend Books</a></li>
+				  <% if(currentUser != null) {%>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
+				  <% } %>
+					  </ul>
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item">
+							<form class="form-inline my-2 my-lg-0" action="/books" method="GET">
+								<div class="input-group">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="basic-addon1"><i class="fa fa-search"></i></span>
+									</div>
+									<input type="text" name="search" class="form-control" placeholder="Search Books...">
+								</div>
+								<button class="btn btn-info my-2 my-sm-0" style="margin: 0 10px;">Search</button>
+							</form>
+						</li>
+						<% if (!currentUser) { %>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
+						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
+					</form>
+				</li>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signin" method="GET">
+						<button class="btn btn-outline-success my-2 my-sm-0" style="margin: 0 10px;">Sign In</button>
+					</form>
+				</li>
+				<% } else { %>
+				<li class="nav-item" style="text-align: center;">
+					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
+					<br>
+					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
+				</li>
+				<li class="nav-item my-auto" style="text-align: center;color:white;font-size: 24px;">
+					<a class="my-2 my-lg-0 mx-4" style="color: black;background-color: transparent;border: 0;" href="/<%= currentUser._id.toString() %>/cart"><i class="fa fa-shopping-cart"></i></a>
+				</li>
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
+						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Sign Out</button>
+					</form>
+				</li>
+				<% } %>
+					</ul>
+
+				  </div>
+				</nav>
+	<h1 style="margin:60px;">
+	</h1>
+<div class="about-section">
+  <h1>About Us Page</h1>
+  <p>We are someone doing something you shoud better mind your f...g bussiness.</p>
+  <p>Ab aa hi gye ho to dekh lo!</p>
+</div>
+
+<h2 style="text-align:left">Our Team</h2>
+<div class="row">
+  <div class="column">
+    <div class="card">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSwr_NIrqN1njFg8lMyyKEetVIUnmjrUhh1tQ&usqp=CAU" alt="Atul Singh" style="width:100%">
+      <div class="container">
+        <h2>Abul Singha</h2>
+        <p class="title">Developer</p>
+        <p>motka sala.</p>
+        <p>atul.as72@gmail.com</p>
+        <p><button class="button">Contact</button></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="column">
+    <div class="card">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSwr_NIrqN1njFg8lMyyKEetVIUnmjrUhh1tQ&usqp=CAU" alt="Aditya Anand" style="width:200%">
+      <div class="container">
+        <h2>Aditya Anand</h2>
+        <p class="title">Developer</p>
+        <p>sakth launda.</p>
+        <p>aditya04848@gmail.com</p>
+        <p><button class="button">Contact</button></p>
+      </div>
+    </div>
+  </div>
+  
+	
+<% include partials/footer %>

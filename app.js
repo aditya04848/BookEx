@@ -26,7 +26,8 @@ var express                     = require("express"),
 	axios 						= require('axios'),
 	querystring					= require('querystring'),
 	fetch 						= require('node-fetch'),
-	async 						= require('async');
+	async 						= require('async'),
+    flash                       = require('express-flash-messages');
 mongoose.connect("mongodb://localhost:27017/ualu_app", { useNewUrlParser: true, useUnifiedTopology: true });
 app.use(express.static("assets"));
 app.use(methodOverride('_method'));
@@ -36,6 +37,7 @@ app.use(session({
 	resave : false,
 	saveUninitialized : false
 }));
+app.use(flash());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -154,15 +156,15 @@ function calculateAverage(reviews) {
 
 //Landing Route
 app.get('/', function(req, res){
-	res.render('landingPage');
-});
+	res.render('landingPage',{message : req.flash('notif')});
+});  
 //=====AUTH Routes=====
 // Sign Up Routes
 app.get('/signup', function(req,res){
 	res.render('signUpPage');
 });
 app.get('/about-us', function(req, res){
-	res.render('signUpPage');
+	res.render('aboutUs');
 });
 app.get('/signup/detail', function(req,res){
 	res.render('userDetail');
@@ -783,6 +785,12 @@ app.get('/:id/accepted', function(req, res) {
 	});
 	res.redirect('/');
 });
+//////////////////////////////////////////////////////
+app.get('/notif', function(req, res){
+    req.flash('notify', 'This is a test notification.')
+    res.render('landingPage')
+})
+//////////////////////////////////////////////////////
 
 // Pagination
 // app.get('/products/:page', function(req, res, next) {
@@ -855,11 +863,98 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
     let bufferStream = new stream.PassThrough();
     bufferStream.end(fileObject.buffer);
 
-
-	drive.files.create({
+	let folderId;
+	User.findById(req.user.doc._id, function(err, user){
+		console.log("User.folder_id", user.folder_id);
+		folderId = user.folder_id;
+		if(user.folder_id == null) {
+		console.log("Making the folder");
+		var folderMetadata = {
+			'name': 'Kitab Buddy',
+  			'mimeType': 'application/vnd.google-apps.folder'
+		};
+		drive.files.create(
+			{
+				resource: folderMetadata,
+				fields: 'id'
+			}, 
+			function(err, folder)
+			{
+				if(err) 
+					console.log(err);
+				else 
+				{
+					User.findById(req.user.doc._id, function(err, user) {
+						user.folder_id = folder.data.id;
+						user.save();
+					});
+					drive.files.create(
+					{
+						requestBody: 
+						{
+							name: filename,
+							mimeType: mimetype,
+							parents: [folder.data.id],
+							fields: 'id'
+						},
+						media: 
+						{
+							mimeType: mimetype,
+							body: fs.createReadStream(path)
+						}
+					}, 
+					function(err, file_uploaded)
+					{
+						if(err) 
+							console.log(err);
+						else
+						{ 
+							// change file permissions
+							var fileId = file_uploaded.data.id;
+							var permissions = [
+							  {
+								'type': 'anyone',
+								'role': 'writer'
+							  }
+							];
+							// Using the NPM module 'async'
+							async.eachSeries(permissions, function (permission, permissionCallback) 
+							{
+								drive.permissions.create(
+								{
+									resource: permission,
+									fileId: fileId,
+									fields: 'id',
+							  	}, 
+								function (err, res) 
+								{
+									if (err) {
+										  // Handle error...
+										  console.error(err);
+										  permissionCallback(err);
+									} else {
+									  console.log('Permission ID: ', res.id)
+									  permissionCallback();
+									}
+							  	});
+							}, function (err) {
+							  if (err) {
+								// Handle error
+								console.error(err);
+							  } else {
+								// All permissions inserted
+								res.redirect('/books');
+							  }
+							});
+						}
+					});
+				}});
+	} else {
+		drive.files.create({
 		requestBody: {
 			name: filename,
 			mimeType: mimetype,
+			parents: [user.folder_id],
 			fields: 'id'
 		},
 		media: {
@@ -870,7 +965,6 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 			if(err) console.log(err);
 			else{ 
 				// change file permissions
-				console.log(file_uploaded.data.id);
 				var fileId = file_uploaded.data.id;
 				var permissions = [
 				  {
@@ -906,7 +1000,62 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 				});
 			}
 		});
+	}
 	});
+	});
+
+	// drive.files.create({
+	// 	requestBody: {
+	// 		name: filename,
+	// 		mimeType: mimetype,
+	// 		parents: [folderId],
+	// 		fields: 'id'
+	// 	},
+	// 	media: {
+	// 		mimeType: mimetype,
+	// 		body: fs.createReadStream(path)
+	// 	}}, 
+	// 	function(err, file_uploaded){
+	// 		if(err) console.log(err);
+	// 		else{ 
+	// 			// change file permissions
+	// 			console.log(file_uploaded.data.id);
+	// 			var fileId = file_uploaded.data.id;
+	// 			var permissions = [
+	// 			  {
+	// 				'type': 'anyone',
+	// 				'role': 'writer'
+	// 			  }
+	// 			];
+	// 			// Using the NPM module 'async'
+	// 			async.eachSeries(permissions, function (permission, permissionCallback) {
+	// 			  drive.permissions.create({
+	// 				resource: permission,
+	// 				fileId: fileId,
+	// 				fields: 'id',
+	// 			  }, function (err, res) {
+	// 				if (err) {
+	// 				  // Handle error...
+	// 				  console.error(err);
+	// 				  permissionCallback(err);
+	// 				} else {
+	// 				  console.log('Permission ID: ', res.id)
+	// 				  permissionCallback();
+	// 				}
+	// 			  });
+	// 			}, function (err) {
+	// 			  if (err) {
+	// 				// Handle error
+	// 				console.error(err);
+	// 			  } else {
+	// 				// All permissions inserted
+					  
+	// 			res.redirect('/books');
+	// 			  }
+	// 			});
+	// 		}
+	// 	});
+	// });
 
 //====== END OF ROUTES =====
 //start server
