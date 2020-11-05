@@ -27,7 +27,8 @@ var express                     = require("express"),
 	querystring					= require('querystring'),
 	fetch 						= require('node-fetch'),
 	async 						= require('async'),
-    flash                       = require('express-flash-messages');
+    flash                       = require('express-flash-messages'),
+	Ebook						= require('./models/eBook');
 mongoose.connect("mongodb://localhost:27017/ualu_app", { useNewUrlParser: true, useUnifiedTopology: true });
 app.use(express.static("assets"));
 app.use(methodOverride('_method'));
@@ -279,7 +280,7 @@ app.get('/books', function(req, res) {
 });
 
 app.get('/books/page/:page',function(req, res){ 
-	var perPage = 2
+	var perPage = 16
     var page = req.params.page || 1
 	if(req.query.search){
 		//Search query using escapeRegex
@@ -341,7 +342,6 @@ app.post('/books', upload.single('image'), function(req,res){
 		req.body.newBook.image = result.secure_url;
 		req.body.newBook.imageId = result.public_id;
 		req.body.newBook.uploader = req.user.doc.username;
-		console.log(req.body.newBook.description);
 		Book.create(req.body.newBook, function(err, book){
 			if(err) {
 				console.log(err);
@@ -376,7 +376,6 @@ app.get('/books/:id', function(req, res){
 		if(err) {
 			console.log(err);
 		} else {
-			console.log(data);
 			if(data.ratings.length > 0) {
               var ratings = [];
               var length = data.ratings.length;
@@ -727,19 +726,16 @@ app.get('/:id1/cart/:id2', function(req, res){
 			console.log(err);
 		else{
 			UserData.populate('cart').exec(function(err, user){
-				console.log(user);
 				var len = user.cart_items;
 				var price = 0;
 				for(var i=0; i<len; i++){
 					if(user.cart[i]._id.toString() == req.params.id2.toString()){
-						console.log(user.cart[i]);
 						price = parseInt(user.cart[i].price);
 						// delete user.cart[i];
 						user.cart.splice(i, 1);
 						break;
 					}
 				}
-				console.log("Price: " + price);
 				user.total_price = user.total_price - parseInt(price);
 				user.cart_items = user.cart_items - 1;
 				user.save();
@@ -814,6 +810,53 @@ app.get('/notif', function(req, res){
 // });
 
 // Ebooks Route
+app.get('/ebooks', function(req, res){
+	if(req.query.search){
+		var string = encodeURIComponent(req.query.search);
+		res.redirect('/ebooks/page/1/?search='+string);
+	}
+	else {
+		res.redirect('/ebooks/page/1');
+	}
+});
+
+app.get('/ebooks/page/:page', function(req, res){
+	var perPage = 16;
+	var page = req.params.page || 1;
+	if(req.query.search){
+		// Search query using escape search
+		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+		var ebook_data = Ebook.find({title: regex});
+		var ebookData = Ebook.find({titile: regex})
+		.skip((perPage * page) - perPage)
+		.limit(perPage);
+		ebookData.exec(function(err, data){
+			ebook_data.count().exec(function(err, count){
+				if(err) console.log(err);
+				else {
+					var string = encodeURIComponent(req.query.search);
+					res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+				}
+			})
+		})
+	}
+	else {
+		// Show all data from the database
+		var ebookData = Ebook.find({})
+		.skip((perPage * page) - perPage)
+		.limit(perPage);
+		ebookData.exec(function(err, data){
+			Ebook.count().exec(function(err, count){
+				if(err) console.log(err);
+				else {
+					var string = "";
+					res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+				}
+			})
+		})
+	}
+});
+
 app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 	
 	// const oauth2Client = new google.auth.OAuth2();
@@ -865,10 +908,8 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 
 	let folderId;
 	User.findById(req.user.doc._id, function(err, user){
-		console.log("User.folder_id", user.folder_id);
 		folderId = user.folder_id;
 		if(user.folder_id == null) {
-		console.log("Making the folder");
 		var folderMetadata = {
 			'name': 'Kitab Buddy',
   			'mimeType': 'application/vnd.google-apps.folder'
@@ -933,7 +974,6 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 										  console.error(err);
 										  permissionCallback(err);
 									} else {
-									  console.log('Permission ID: ', res.id)
 									  permissionCallback();
 									}
 							  	});
@@ -942,8 +982,14 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 								// Handle error
 								console.error(err);
 							  } else {
-								// All permissions inserted
-								res.redirect('/books');
+								  req.body.newBook.file_id = fileId;
+					  			  req.body.newBook.uploader = req.user.doc.username;
+								  Ebook.create(req.body.newBook, function(err, ebook){
+									  if(err) console.log(err);
+									  else {
+										  res.redirect('/books');
+									  }
+								  })
 							  }
 							});
 						}
@@ -984,7 +1030,6 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 					  console.error(err);
 					  permissionCallback(err);
 					} else {
-					  console.log('Permission ID: ', res.id)
 					  permissionCallback();
 					}
 				  });
@@ -994,68 +1039,46 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 					console.error(err);
 				  } else {
 					// All permissions inserted
-					  
-				res.redirect('/books');
+								  req.body.newBook.file_id = fileId;
+					  			  req.body.newBook.uploader = req.user.doc.username;
+								  Ebook.create(req.body.newBook, function(err, ebook){
+									  if(err) console.log(err);
+									  else {
+										  res.redirect('/books');
+									  }
+								  })
 				  }
 				});
 			}
 		});
 	}
 	});
-	});
+});
 
-	// drive.files.create({
-	// 	requestBody: {
-	// 		name: filename,
-	// 		mimeType: mimetype,
-	// 		parents: [folderId],
-	// 		fields: 'id'
-	// 	},
-	// 	media: {
-	// 		mimeType: mimetype,
-	// 		body: fs.createReadStream(path)
-	// 	}}, 
-	// 	function(err, file_uploaded){
-	// 		if(err) console.log(err);
-	// 		else{ 
-	// 			// change file permissions
-	// 			console.log(file_uploaded.data.id);
-	// 			var fileId = file_uploaded.data.id;
-	// 			var permissions = [
-	// 			  {
-	// 				'type': 'anyone',
-	// 				'role': 'writer'
-	// 			  }
-	// 			];
-	// 			// Using the NPM module 'async'
-	// 			async.eachSeries(permissions, function (permission, permissionCallback) {
-	// 			  drive.permissions.create({
-	// 				resource: permission,
-	// 				fileId: fileId,
-	// 				fields: 'id',
-	// 			  }, function (err, res) {
-	// 				if (err) {
-	// 				  // Handle error...
-	// 				  console.error(err);
-	// 				  permissionCallback(err);
-	// 				} else {
-	// 				  console.log('Permission ID: ', res.id)
-	// 				  permissionCallback();
-	// 				}
-	// 			  });
-	// 			}, function (err) {
-	// 			  if (err) {
-	// 				// Handle error
-	// 				console.error(err);
-	// 			  } else {
-	// 				// All permissions inserted
-					  
-	// 			res.redirect('/books');
-	// 			  }
-	// 			});
-	// 		}
-	// 	});
-	// });
+app.get('/ebooks/:id', function(req, res){
+	var EbooksData = Ebook.findById(req.params.id);
+	EbooksData.populate('ratings').exec(function(err, data){
+		if(err) {
+			console.log(err);
+		} else {
+			if(data.ratings.length > 0) {
+              var ratings = [];
+              var length = data.ratings.length;
+              data.ratings.forEach(function(rating) { 
+                ratings.push(rating.rating);
+              });
+              var rating = ratings.reduce(function(total, element) {
+				  return total + element;
+              });
+				if(!data.rating)
+					data.rating = 0;
+              data.rating = rating / length;
+              data.save();
+            }
+			res.render('ebookDetail', {book: data});
+		}
+	});
+});
 
 //====== END OF ROUTES =====
 //start server

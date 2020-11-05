@@ -5,7 +5,16 @@ var eBookSchema = new mongoose.Schema({
 	author: String,
 	description: String,
 	uploader: String,
-	is_display: {type: Boolean, default: false}
+	price: String,
+	file_id: String,
+	is_display: {type: Boolean, default: false},
+	ratings: [
+		{
+			 type: mongoose.Schema.Types.ObjectId,
+			 ref: "Rating"
+		}
+	],
+	rating: { type: Number, default: 0 }
 });
 
 eBookSchema.statics.findOrCreate = require('find-or-create');
