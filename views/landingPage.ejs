@@ -23,17 +23,6 @@
 				  <% } %>
 			  </ul>
 			<ul class="navbar-nav ml-auto">
-				<li class="nav-item">
-					<form class="form-inline my-2 my-lg-0" action="/books" method="GET">
-						<div class="input-group">
-							<div class="input-group-prepend">
-								<span class="input-group-text" id="basic-addon1"><i class="fa fa-search"></i></span>
-							</div>
-							<input type="text" name="search" class="form-control" placeholder="Search Books...">
-						</div>
-						<button class="btn btn-info my-2 my-sm-0" style="margin: 0 10px;">Search</button>
-					</form>
-				</li>
 				<% if (!currentUser) { %>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">

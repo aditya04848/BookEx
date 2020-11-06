@@ -26,9 +26,10 @@ var express                     = require("express"),
 	axios 						= require('axios'),
 	querystring					= require('querystring'),
 	fetch 						= require('node-fetch'),
-	async 						= require('async'),
     flash                       = require('express-flash-messages'),
-	Ebook						= require('./models/eBook');
+	Ebook						= require('./models/eBook'),
+	Misc						= require('./models/Misc'),
+	async 						= require('async');
 mongoose.connect("mongodb://localhost:27017/ualu_app", { useNewUrlParser: true, useUnifiedTopology: true });
 app.use(express.static("assets"));
 app.use(methodOverride('_method'));
@@ -827,7 +828,7 @@ app.get('/ebooks/page/:page', function(req, res){
 		// Search query using escape search
 		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
 		var ebook_data = Ebook.find({title: regex});
-		var ebookData = Ebook.find({titile: regex})
+		var ebookData = Ebook.find({title: regex})
 		.skip((perPage * page) - perPage)
 		.limit(perPage);
 		ebookData.exec(function(err, data){
@@ -858,28 +859,6 @@ app.get('/ebooks/page/:page', function(req, res){
 });
 
 app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
-	
-	// const oauth2Client = new google.auth.OAuth2();
-	
-	// const getAccessToken = async refreshToken => {
-	//   try {
-	// 	const accessTokenObj = await axios.post(
-	// 	  'https://accounts.google.com/o/oauth2/token',
-	// 	  querystring.stringify({
-	// 		refresh_token: req.user.doc.refreshToken,
-	// 		client_id: "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
-	// 		client_secret: "bcNyHqPiFtsXUpTDUwme213T",
-	// 		grant_type: 'refresh_token'
-	// 	  })
-	// 	);
-	// 	return accessTokenObj.data.access_token;
-	//   } catch (err) {
-	// 	  console.log("Error ->>>");
-	// 	console.log(err);
-	//   }
-	// };
-	
-	// oauth2Client.setCredentials({'access_token': getAccessToken});
 	
 	let tokenDetails = await fetch("https://accounts.google.com/o/oauth2/token", {
 		"method": "POST",
@@ -1078,6 +1057,11 @@ app.get('/ebooks/:id', function(req, res){
 			res.render('ebookDetail', {book: data});
 		}
 	});
+});
+
+// Miscellaneous Items
+app.get('/misc', function(req, res){
+	res.send("Miscellaneous Items Page");
 });
 
 //====== END OF ROUTES =====
