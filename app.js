@@ -77,7 +77,7 @@ function isLoggedIn(req, res, next) {
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'kitabbuddy1234',
+    user: 'kitabbuddy1234@gmail.com',
     pass: 'kitab1234'
   },
 	tls: {
@@ -1179,6 +1179,7 @@ app.get('/misc/:id/accepted', function(req, res){
 
 //====== END OF ROUTES =====
 //start server
-app.listen(process.env.PORT, process.env.IP, function(){
+// process.env.PORT, process.env.IP
+app.listen(8080, function(){
 	console.log("Server is listening...");
 });
