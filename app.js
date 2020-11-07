@@ -1061,7 +1061,92 @@ app.get('/ebooks/:id', function(req, res){
 
 // Miscellaneous Items
 app.get('/misc', function(req, res){
-	res.send("Miscellaneous Items Page");
+	if(req.query.search) {
+		var string = encodeURIComponent(req.query.search);
+		res.redirect("/misc/page/1/?search="+string);
+	}
+	else {
+		res.redirect("/misc/page/1");
+	}
+});
+
+app.get('/misc/page/:page', function(req, res){
+	var perPage = 16;
+	var page = req.params.page || 1
+    if(req.query.search){
+        //Search query using escapeRegex
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        var misc_data = Misc.find({title: regex});
+        var miscData = Misc.find({title : regex})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+        miscData.exec(function(err, data){
+            misc_data.count().exec(function(err, count) {
+                if(err) {
+                    console.log(err);
+                } else {
+                    var string = encodeURIComponent(req.query.search);
+                    res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+                    // console.log(data);
+                }
+            });
+        });    
+    }
+    else{
+        //Show all data from database
+        var miscData = Misc.find({})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+        miscData.exec(function(err, data){
+            Misc.count().exec(function(err, count) {
+                if(err) {
+                    console.log(err);
+                } else {
+                    var string = "";
+					console.log('count', count);
+                    res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+                }
+            });
+        });    
+    }
+});
+
+app.post('/misc', upload.single('image'), function(req, res){
+	cloudinary.uploader.upload(req.file.path, function(result){
+		// add cloudinary url for the image 
+		req.body.newBook.image = result.secure_url;
+		req.body.newBook.imageId = result.public_id;
+		req.body.newBook.uploader = req.user.doc.username;
+		Misc.create(req.body.newBook, function(err, obj){
+			if(err) console.log(err);
+			else {
+				res.redirect("/misc");
+			}
+		});
+	});
+});
+
+app.get('/misc/:id', function(req, res){
+	var miscData = Misc.findById(req.params.id);
+	miscData.populate('ratings').exec(function(err, data){
+		if(err) console.log(err);
+		else {
+			if(data.ratings.length > 0) {
+				var ratings = [];
+				var length = data.ratings.length;
+				data.ratings.forEach(function(rating){
+					ratings.push(rating.rating);
+				});
+				var rating = rating.reduce(function(total, element){
+					return total+element;
+				});
+				if(!data.rating) data.rating = 0;
+				data.rating = rating/length;
+				data.save();
+			}
+			res.render('miscDetail', {book: data});
+		}
+	});
 });
 
 //====== END OF ROUTES =====

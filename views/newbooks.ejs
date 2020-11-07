@@ -13,7 +13,7 @@
 						  <li class="nav-item my-auto"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">Books</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/ebooks" style="margin: 0 10px;">E-Books/PDFs</a></li>
-				  <li class="nav-item my-auto"><a class="nav-link" href="" style="margin: 0 10px;">Miscellaneous</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/misc" style="margin: 0 10px;">Miscellaneous</a></li>
 				  <li class="nav-item my-auto active"><a class="nav-link" href="/books/new" style="margin: 0 10px;">Lend Items</a></li>
 				  <% if(currentUser != null) {%>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
@@ -62,11 +62,11 @@
 			<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px">
 				<form style="padding:15px 35px;" action="/books" method="POST" enctype="multipart/form-data" name="form-book-fill">
 					 <div class="form-group row">
-						<label for="inputTitle" class="col-sm-2 col-form-label">File Type</label>
+						<label for="inputTitle" class="col-sm-2 col-form-label">Item Type</label>
 						<div class="col">
 							<button class="btn btn-primary" id="hard" onclick="hard_fn()" type="button">Book</button>
 							<button class="btn btn-secondary" id="pdf" onclick="pdf_fn()" type="button">PDF</button>
-							<button class="btn btn-secondary" id="pdf" onclick="pdf_fn()" type="button">Miscellaneous</button>
+							<button class="btn btn-secondary" id="misc" onclick="misc_fn()" type="button">Miscellaneous</button>
 						 </div>
 					</div>
 					 <div class="form-group row">
@@ -75,13 +75,13 @@
 							<input type="text" name="newBook[title]" class="form-control" id="inputTitle" placeholder="Title">
 						 </div>
 					</div>
-					<div class="form-group row">
+					<div class="form-group row" id="author">
 						<label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
 						<div class="col">
 							<input type="text" name="newBook[author]"class="form-control" id="inputAuthor" placeholder="Author">
 						</div>	
 					</div>
-					<div class="form-group row">
+					<div class="form-group row" id="price-div">
 						<label for="inputPrice" class="col-sm-2 col-form-label">Price</label>
 						<div class="col">
 							<input type="text" name= "newBook[price]" class="form-control" id="inputPrice" placeholder="Price">
@@ -115,15 +115,22 @@
 	<script>
 		var hard_btn = document.getElementById('hard');
 		var pdf_btn = document.getElementById('pdf');
+		var misc_btn = document.getElementById('misc');
 		var file = document.getElementById('hard-div');
 		var url = document.getElementById('pdf-div');
+		var price = document.getElementById('price-div');
+		var author = document.getElementById('author');
 		function hard_fn() {
 			hard_btn.classList.add('btn-primary');
 			hard_btn.classList.remove('btn-secondary');
 			pdf_btn.classList.add('btn-secondary');
 			pdf_btn.classList.remove('btn-primary');
+			misc_btn.classList.add('btn-secondary');
+			misc_btn.classList.remove('btn-primary');
 			file.style.display = "flex";
 			url.style.display = "none";
+			price.style.display = "flex";
+			author.style.display = "flex";
 			document['form-book-fill'].action = "/books";
 		}
 		function pdf_fn()
@@ -132,9 +139,27 @@
 			hard_btn.classList.remove('btn-primary');
 			pdf_btn.classList.add('btn-primary');
 			pdf_btn.classList.remove('btn-secondary');
+			misc_btn.classList.add('btn-secondary');
+			misc_btn.classList.remove('btn-primary');
 			file.style.display = "none";
 			url.style.display = "flex";
+			author.style.display = "flex";
+			price.style.display = "none";
 			document['form-book-fill'].action = "/ebooks";
+		}
+		function misc_fn()
+		{
+			misc_btn.classList.remove('btn-secondary');
+			misc_btn.classList.add('btn-primary');
+			hard_btn.classList.add('btn-secondary');
+			hard_btn.classList.remove('btn-primary');
+			pdf_btn.classList.remove('btn-primary');
+			pdf_btn.classList.add('btn-secondary');
+			file.style.display = "flex";
+			author.style.display = "none";
+			url.style.display = "none";
+			price.style.display = "flex";
+			document['form-book-fill'].action = "/misc";
 		}
 	</script>
 <% include partials/footer %>

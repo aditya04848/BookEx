@@ -1,7 +1,7 @@
 <% include partials/header %>
+<!-- Navbar Begins -->
 
 <body>
-	
 
 <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: rgba(255, 255, 255, 0.85);">
 		  <a class="navbar-brand mb-0 h1" href="/">KitabBuddy</a>
@@ -14,13 +14,24 @@
 				  <li class="nav-item my-auto"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">Books</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/ebooks" style="margin: 0 10px;">E-Books/PDFs</a></li>
-				  <li class="nav-item my-auto"><a class="nav-link" href="/misc" style="margin: 0 10px;">Miscellaneous</a></li>
+				  <li class="nav-item my-auto active"><a class="nav-link" href="/misc" style="margin: 0 10px;">Miscellaneous</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/books/new" style="margin: 0 10px;">Lend Items</a></li>
 				  <% if(currentUser != null) {%>
-				  <li class="nav-item my-auto active"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
 				  <% } %>
 			  </ul>
 			<ul class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<form class="form-inline my-2 my-lg-0" action="/misc" method="GET">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1"><i class="fa fa-search"></i></span>
+							</div>
+							<input type="text" name="search" class="form-control" placeholder="Search Miscellaneous...">
+						</div>
+						<button class="btn btn-info my-2 my-sm-0" style="margin: 0 10px;">Search</button>
+					</form>
+				</li>
 				<% if (!currentUser) { %>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
@@ -53,9 +64,9 @@
 		</nav>
 
 <!-- End of Navbar -->
-	
-	<div class="card-deck" style="margin: 75px 10px;">
-	<% var count = 0;records.forEach(function(row){ if(row.uploader == currentUser.username) {  count++;%>
+
+<div class="card-deck" style="margin: 100px 10px;">
+	<% records.forEach(function(row){ if(currentUser == null || row.uploader != currentUser.username) {%>
 	<div class="col-lg-3 col-md-6" style="margin-bottom: 15px;">
   <div class="card books">
 	  <div class="card-img-top img-fluid books-img" style="width:100%;height: 350px;overflow: hidden;display:flex;padding: 7px;">
@@ -77,23 +88,72 @@
 		<% } else { %>
 			<p class="card-text"><%= row.description%></p>
 		<% } %>
-		<form action="/books/<%= row._id %>" method="GET" style="text-align:center;">
+		<form action="/misc/<%= row._id %>" method="GET" style="text-align:center;">
 			<button type="submit" class="btn btn-sm btn-light stretched-link" style="background-color: rgba(277, 277, 277, 0.9)"><i class="fa fa-info"></i> View More</button>
 		</form>
 	</div>
 		</div>
   </div>
-	<% }}); if(count == 0) {%>
-		<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px; width: 400px; text-align: center;">
-	<img src="https://cdn.iconscout.com/icon/free/png-512/data-not-found-1965034-1662569.png" style="
-    width: 300px;
-    height: auto;
-">
-	<hr>
-	<p>It seems like you have not uploaded any book.</p>
-			<a href='/books/new' class="btn btn-outline-primary"style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto;">Lend a book now!</a>
+	<% }}) %>
 </div>
+	<% if(query != null) { %>
+		<% if (pages > 0) { %>
+			<ul class="pagination text-center justify-content-center">
+				<% if (current == 1) { %>
+					<li class="page-item disabled"><a class="page-link">First</a></li>
+				<% } else { %>
+					<li class="page-item"><a class="page-link" href="/misc/page/1/?search=<%= query %>">First</a></li>
+				<% } %>
+				<% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+				<% if (i !== 1) { %>
+					<li class="page-item disabled"><a class="page-link">...</a></li>
+				<% } %>
+				<% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+					<% if (i == current) { %>
+						<li class="page-item active"><a class="page-link"><%= i %></a></li>
+					<% } else { %>
+						<li class="page-item"><a class="page-link" href="/misc/page/<%= i %>/?search=<%= query %>"><%= i %></a></li>
+					<% } %>
+					<% if (i == Number(current) + 4 && i < pages) { %>
+						<li class="page-item disabled"><a class="page-link">...</a></li>
+					<% } %>
+				<% } %>
+				<% if (current == pages) { %>
+					<li class="page-item disabled"><a class="page-link">Last</a></li>
+				<% } else { %>
+					<li class="page-item"><a class="page-link" href="/misc/page/<%= pages %>/?search=<%= query %>">Last</a></li>
+				<% } %>
+			</ul>
+		<% } %>
+	<% } else { %>
+		<% if (pages > 0) { %>
+			<ul class="pagination text-center justify-content-center">
+				<% if (current == 1) { %>
+					<li class="page-item disabled"><a class="page-link">First</a></li>
+				<% } else { %>
+					<li class="page-item"><a class="page-link" href="/misc/page/1">First</a></li>
+				<% } %>
+				<% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+				<% if (i !== 1) { %>
+					<li class="page-item disabled"><a class="page-link">...</a></li>
+				<% } %>
+				<% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+					<% if (i == current) { %>
+						<li class="page-item active"><a class="page-link"><%= i %></a></li>
+					<% } else { %>
+						<li class="page-item"><a class="page-link" href="/misc/page/<%= i %>"><%= i %></a></li>
+					<% } %>
+					<% if (i == Number(current) + 4 && i < pages) { %>
+						<li class="page-item disabled"><a class="page-link">...</a></li>
+					<% } %>
+				<% } %>
+				<% if (current == pages) { %>
+					<li class="page-item disabled"><a class="page-link">Last</a></li>
+				<% } else { %>
+					<li class="page-item"><a class="page-link" href="/misc/page/<%= pages %>">Last</a></li>
+				<% } %>
+			</ul>
+		<% } %>
 	<% } %>
-</div>
-	
+
 <% include partials/footer %>

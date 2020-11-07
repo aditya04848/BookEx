@@ -13,9 +13,9 @@
 		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 			  <ul class="navbar-nav mr-auto">
 				  <li class="nav-item my-auto"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
-				  <li class="nav-item my-auto active"><a class="nav-link" href="/books" style="margin: 0 10px;">Books</a></li>
+				  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">Books</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/ebooks" style="margin: 0 10px;">E-Books/PDFs</a></li>
-				  <li class="nav-item my-auto"><a class="nav-link" href="/misc" style="margin: 0 10px;">Miscellaneous</a></li>
+				  <li class="nav-item my-auto active"><a class="nav-link" href="/misc" style="margin: 0 10px;">Miscellaneous</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/books/new" style="margin: 0 10px;">Lend Items</a></li>
 				  <% if(currentUser != null) {%>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
@@ -23,12 +23,12 @@
 			  </ul>
 			<ul class="navbar-nav ml-auto">
 				<li class="nav-item">
-					<form class="form-inline my-2 my-lg-0" action="/books" method="GET">
+					<form class="form-inline my-2 my-lg-0" action="/misc" method="GET">
 						<div class="input-group">
 							<div class="input-group-prepend">
 								<span class="input-group-text" id="basic-addon1"><i class="fa fa-search"></i></span>
 							</div>
-							<input type="text" name="search" class="form-control" placeholder="Search Books...">
+							<input type="text" name="search" class="form-control" placeholder="Search Miscellaneous...">
 						</div>
 						<button class="btn btn-info my-2 my-sm-0" style="margin: 0 10px;">Search</button>
 					</form>
@@ -81,10 +81,10 @@
 		
 		<% if(currentUser !=null) { if(currentUser.username == book.uploader || currentUser.username == 'kitabbuddy1234@gmail.com') { %>
 			<div style="text-align: right">
-				<form action="/books/<%= book._id %>/edit" method="GET"  style="display: inline-block">
+				<form action="/misc/<%= book._id %>/edit" method="GET"  style="display: inline-block">
 					<button type="submit" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i> Edit</button>
 				</form>
-				<form action="/books/<%= book._id %>?_method=DELETE" method="POST" style="display: inline-block">
+				<form action="/misc/<%= book._id %>?_method=DELETE" method="POST" style="display: inline-block">
 					<button type="submit" class="btn btn-sm btn-danger" style="margin-right:10px;"><i class="fa fa-trash"></i> Delete</button>
 				</form>
 			</div>
@@ -95,19 +95,19 @@
 		<hr>
 		<% if(currentUser!=null) { if(currentUser.username != book.uploader) {%>
 		    <div style="float:left">
-				<a href='/books/<%= book._id %>/comment' class="btn btn-outline-warning">Rate this book</a>
+				<a href='/misc/<%= book._id %>/comment' class="btn btn-outline-warning">Rate this book</a>
 		    </div>
 			<div style="float:right;">
-				<a href='/books/<%= book._id %>/buy' class="btn btn-outline-success">Buy Now!</a>
+				<a href='/misc/<%= book._id %>/buy' class="btn btn-outline-success">Buy Now!</a>
 			</div>
 			<div style="margin: 0 10px;float:right;">
-				<form action="/books/<%= book._id %>/cart" method="POST">
+				<form action="/misc/<%= book._id %>/cart" method="POST">
 					<button type='submit' class="btn btn-outline-info">Add to Cart</button>					
 				</form>
 			</div>
 		<% }} else { %>
 			<div style="float:left">
-				<a href='/signin' class="btn btn-outline-warning">Sign In to Rate this book</a>
+				<a href='/signin' class="btn btn-outline-warning">Sign In to Rate this item</a>
 		    </div>
 			<div style="float:right;">
 				<a href='/signin' class="btn btn-outline-success">Sign In to Purchase</a>
