@@ -1177,6 +1177,37 @@ app.get('/misc/:id/accepted', function(req, res){
 	});
 });
 
+// Add misc to cart
+app.get('/misc/:id/cart', function(req, res){
+	if(req.user.doc==null)
+	{
+		User.findById(req.user._id, function(err, user){
+			if(err)
+				console.log(err);
+			Misc.findById(req.params.id, function(err, book){
+				user.cart.push(book);
+				user.cart_items = user.cart_items + 1;
+				user.total_price = user.total_price + parseInt(book.price);
+				user.save();
+				res.redirect('/misc/'+book._id.toString());
+			});
+		});
+	}
+	else{
+		User.findById(req.user.doc._id, function(err, user){
+			if(err)
+				console.log(err);
+			Misc.findById(req.params.id, function(err, book){
+				user.cart.push(book);
+				user.cart_items = user.cart_items + 1;
+				user.total_price = user.total_price + parseInt(book.price);
+				user.save();
+				res.redirect('/misc/'+book._id.toString());
+			});
+		});
+	}
+});
+
 //====== END OF ROUTES =====
 //start server
 // process.env.PORT, process.env.IP

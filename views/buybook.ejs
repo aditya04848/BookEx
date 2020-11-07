@@ -63,8 +63,8 @@
 	<p>
 		<strong>Hello there!</strong> Just a bit away from buying this item. Just make sure that clicking the <strong style="color: green;">Accept</strong> button will deliver the uploader a mail with your necessary contact details. If you are not willing to buy you can always <strong style="color: red;">Decline</strong>.
 	</p>
-	<a class="btn btn-outline-success btn-lg" style="margin: 20px 120px;" href='/books/<%= records._id %>/accepted'>Accept</a>
-	<a class="btn btn-outline-danger btn-lg" style="margin: 20px 90px;" href='/books/<%= records._id %>'>Decline</a>
+	<a class="btn btn-outline-success btn-lg" style="margin: 20px 120px;" href='/<%= buying %>/<%= records._id %>/accepted'>Accept</a>
+	<a class="btn btn-outline-danger btn-lg" style="margin: 20px 90px;" href='/<%= buying %>/<%= records._id %>'>Decline</a>
 </div>
 
 <% include partials/footer %>
