@@ -29,12 +29,8 @@ var express                     = require("express"),
     flash                       = require('express-flash-messages'),
 	Ebook						= require('./models/eBook'),
 	Misc						= require('./models/Misc'),
-	{MongoClient}				= require('mongodb'),
-	uri							= "mongodb+srv://BookEx:7230429adi@cluster0.fcnj1.mongodb.net/ualu_app?retryWrites=true&w=majority",
-	client						= new MongoClient(uri),
 	async 						= require('async');
-//client.connect();
-mongoose.connect("mongodb+srv://BookEx:7230429adi@cluster0.fcnj1.mongodb.net/ualu_app?retryWrites=true&w=majority");
+mongoose.connect("mongodb+srv://BookEx:7230429adi@cluster0.fcnj1.mongodb.net/ualu_app?retryWrites=true&w=majority",{useUnifiedTopology:true, useNewUrlParser:true});
 app.use(express.static("assets"));
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
@@ -1183,6 +1179,6 @@ app.get('/misc/:id/accepted', function(req, res){
 
 //====== END OF ROUTES =====
 //start server
-app.listen(8080, function(){
+app.listen(process.env.PORT, process.env.IP, function(){
 	console.log("Server is listening...");
 });
