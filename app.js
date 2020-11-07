@@ -1180,6 +1180,6 @@ app.get('/misc/:id/accepted', function(req, res){
 //====== END OF ROUTES =====
 //start server
 // process.env.PORT, process.env.IP
-app.listen(8080, function(){
+app.listen(process.env.PORT, process.env.IP, function(){
 	console.log("Server is listening...");
 });
