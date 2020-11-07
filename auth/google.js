@@ -11,9 +11,9 @@ passport.deserializeUser(function(User, done) {
 });
 
 passport.use(new GoogleStrategy({
-    clientID: "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
-    clientSecret: "bcNyHqPiFtsXUpTDUwme213T",
-    callbackURL: "https://kitab-buddy.run-us-west2.goorm.io/signup/google/callback"
+    clientID: "921117793019-6r4on28a2c1j8a6tf95ogmp82cpqi7jj.apps.googleusercontent.com",
+    clientSecret: "M3uhkGt4D8RcBQNPUQ0vIROf",
+    callbackURL: "http://book-exchnge.herokuapp.com//signup/google/callback"
   },
   function(accessToken, refreshToken, profile, done) {
 	console.log(refreshToken);
