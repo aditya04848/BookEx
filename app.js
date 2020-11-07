@@ -29,8 +29,12 @@ var express                     = require("express"),
     flash                       = require('express-flash-messages'),
 	Ebook						= require('./models/eBook'),
 	Misc						= require('./models/Misc'),
+	{MongoClient}				= require('mongodb'),
+	uri							= "mongodb+srv://BookEx:7230429adi@cluster0.fcnj1.mongodb.net/ualu_app?retryWrites=true&w=majority",
+	client						= new MongoClient(uri),
 	async 						= require('async');
-mongoose.connect("mongodb://localhost:27017/ualu_app", { useNewUrlParser: true, useUnifiedTopology: true });
+//client.connect();
+mongoose.connect("mongodb+srv://BookEx:7230429adi@cluster0.fcnj1.mongodb.net/ualu_app?retryWrites=true&w=majority");
 app.use(express.static("assets"));
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
@@ -562,7 +566,7 @@ app.get('/books/:id/buy', function(req, res){
 		if(err)
 			console.log(err);
 		else
-			res.render('buybook.ejs', {records: data});
+			res.render('buybook.ejs', {records: data, buying: 'books'});
 	});
 });
 
@@ -1146,6 +1150,34 @@ app.get('/misc/:id', function(req, res){
 			}
 			res.render('miscDetail', {book: data});
 		}
+	});
+});
+
+// Buy Miscellaneous Items route
+app.get('/misc/:id/buy', function(req, res){
+	Misc.findById(req.params.id, function(err, data){
+		if(err) console.log(err);
+		else res.render('buybook', {records: data, buying: 'misc'});
+	});
+});
+
+app.get('/misc/:id/accepted', function(req, res){
+	Misc.findById(req.params.id, function(err, book){
+		const mailOptions = {
+                  from: '"KitabBuddy Admin" <kitabbuddy1234@gmail.com>',
+                  to: book.uploader,
+                  subject: 'YAY!! You got a customer!',
+                  html: "Hello there! Hope you are having a good day.<br>Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer.<br><strong>Best of Luck!</strong><br>The user deatils are provided below: <br><hr>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+"<br>Email ID: "+req.user.doc.username+"<br>Phone Number: "+req.user.doc.mobileno+"<br><h3>Please delete your book from the site once you have sold it.</h3>"
+                };
+
+                transporter.sendMail(mailOptions, function(error, info){
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    console.log('Email sent: ' + info.response);
+                    res.redirect('/');
+                  }
+                });
 	});
 });
 
