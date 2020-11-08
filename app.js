@@ -1222,7 +1222,7 @@ app.get('/misc/:id', function(req, res){
 				data.ratings.forEach(function(rating){
 					ratings.push(rating.rating);
 				});
-				var rating = rating.reduce(function(total, element){
+				var rating = ratings.reduce(function(total, element){
 					return total+element;
 				});
 				if(!data.rating) data.rating = 0;
