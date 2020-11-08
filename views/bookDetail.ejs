@@ -117,7 +117,7 @@
 		<% if(book.ratings.length == 0) { %>
 		<% } else { %>
 			<h3 style="margin:40px auto 10px; text-align: center;">
-				Average Rating: <%= book.rating %>/<span style="font-size: 15px">5</span>
+				Average Rating: <%= book.rating.toFixed(2) %>/<span style="font-size: 15px">5</span>
 			</h3>
 			<p style="text-align: center;">
 				<i>Total Ratings: <%= book.ratings.length %></i>
@@ -133,7 +133,7 @@
 				</h3>
 				<% book.ratings.forEach(function(rating){ %>
 				<hr>
-					<h6 style="display: inline-block; "><%= rating.author.firstname %> <%= rating.author.lastname %></h6>
+					<h6 style="display: inline-block; "><%= rating.firstname %> <%= rating.lastname %></h6>
 					<p style="display: inline-block; float: right; padding: 0 45px; font-size:13px">Rating: <%= rating.rating %></p>
 					<p style="padding: 0 45px; font-size:13px;">
 						<%= rating.text %>

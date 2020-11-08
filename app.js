@@ -144,18 +144,7 @@ cloudinary.config({
 });
 //======MODELS======
 // var Book = mongoose.model('Book', bookSchema);
-//======= ROUTES =======	 
-function calculateAverage(reviews) {
-    if (reviews.length === 0) {
-        return 0;
-    }
-    var sum = 0;
-    reviews.forEach(function (element) {
-        sum += element.rating;
-    });
-    return sum / reviews.length;
-}
-
+//======= ROUTES ======
 
 //Landing Route
 app.get('/', function(req, res){
@@ -625,55 +614,23 @@ app.post('/books/:id/comments', function(req,res){
 			console.log(err);
 		}
 		else{
-			// Comment.create({text: req.body.comment}, function(err, comment){
-			// 	if(err){
-			// 		console.log(err);
-			// 	}
-			// 	else{
-			// 		console.log("Comment Executed!");
-			// 		if(req.user.doc==null)
-			// 		{
-			// 			comment.author.id = req.user._id;
-			// 			comment.author.username = req.user.username;
-			// 		}
-			// 		else{
-			// 			comment.author.id = req.user.doc._id;
-			// 			comment.author.username = req.user.doc.username;
-			// 		}
-			// 		comment.save();
-			// 		book.comments.push(comment);
-			// 	}
-			// });
-			Rating.create({rating: req.body.rating, text: req.body.comment}, function(err, rating){
-				if(err){
-					console.log(err);
-				}
-				else{
-					if(req.user.doc==null)
-					{
-						rating.author._id = req.user._id;
-						rating.author.username = req.user.username;
-						rating.author.firstname = req.user.firstname;
-						rating.author.lastname = req.user.lastname;
-					}
-					else{
-						rating.author._id = req.user.doc._id;
-						rating.author.username =req.user.doc.username;
-						rating.author.firstname = req.user.doc.firstname;
-						rating.author.lastname = req.user.doc.lastname;
-					}
-					rating.save();
-					console.log(rating);
-					// rating : {rating: 4 , ratings: []}
-					book.ratings.push(rating); //error shown here
-					book.rating = calculateAverage(book.ratings);
-					book.save();
-				}
+			
+			var new_rating = new Rating({
+				rating: parseInt(req.body.rating),
+				text: req.body.comment,
+				firstname : req.user.doc.firstname,
+				lastname :req.user.doc.lastname
 			});
+			
+			new_rating.save();
+			
+			book.ratings.push(new_rating);
+			book.save();
+			console.log("Rating: ", new_rating);
+			console.log("Book: ", book);
 			res.redirect('/books/'+book._id.toString());
 		}
 	});
-	// res.send("Post Comment Route");
 })
 
 
@@ -1108,7 +1065,7 @@ app.delete('/ebooks/:id', async function(req, res){
 app.get('/ebooks/:id/comment', function(req, res){
 	Ebook.findById(req.params.id, function(err, data){
 		if(err) console.log(err);
-		else res.render('commentPage', {records: data, commenting: 'ebooks'});
+		else res.render('commentPage', {record: data, commenting: 'ebooks'});
 	})
 })
 
@@ -1118,30 +1075,17 @@ app.post('/ebooks/:id/comments', function(req, res){
             console.log(err);
         }
         else{
-            Rating.create({rating: req.body.rating, text: req.body.comment}, function(err, rating){
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    if(req.user.doc==null)
-                    {
-                        rating.author._id = req.user._id;
-                        rating.author.username = req.user.username;
-                        rating.author.firstname = req.user.firstname;
-                        rating.author.lastname = req.user.lastname;
-                    }
-                    else{
-                        rating.author._id = req.user.doc._id;
-                        rating.author.username =req.user.doc.username;
-                        rating.author.firstname = req.user.doc.firstname;
-                        rating.author.lastname = req.user.doc.lastname;
-                    }
-                    rating.save();
-                    book.ratings.push(rating);
-                    book.rating = calculateAverage(book.ratings);
-                    book.save();
-                }
+			var new_rating = new Rating({
+                rating: parseInt(req.body.rating),
+                text: req.body.comment,
+                firstname : req.user.doc.firstname,
+                lastname :req.user.doc.lastname
             });
+            
+            new_rating.save();
+            
+            book.ratings.push(new_rating);
+            book.save();
             res.redirect('/ebooks/'+book._id.toString());
         }
 	})
@@ -1383,30 +1327,17 @@ app.post('/misc/:id/comments', function(req, res){
             console.log(err);
         }
         else{
-            Rating.create({rating: req.body.rating, text: req.body.comment}, function(err, rating){
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    if(req.user.doc==null)
-                    {
-                        rating.author._id = req.user._id;
-                        rating.author.username = req.user.username;
-                        rating.author.firstname = req.user.firstname;
-                        rating.author.lastname = req.user.lastname;
-                    }
-                    else{
-                        rating.author._id = req.user.doc._id;
-                        rating.author.username =req.user.doc.username;
-                        rating.author.firstname = req.user.doc.firstname;
-                        rating.author.lastname = req.user.doc.lastname;
-                    }
-                    rating.save();
-                    book.ratings.push(rating);
-                    book.rating = calculateAverage(book.ratings);
-                    book.save();
-                }
+			var new_rating = new Rating({
+                rating: parseInt(req.body.rating),
+                text: req.body.comment,
+                firstname : req.user.doc.firstname,
+                lastname :req.user.doc.lastname
             });
+            
+            new_rating.save();
+            
+            book.ratings.push(new_rating);
+            book.save();
             res.redirect('/misc/'+book._id.toString());
         }
 	})
@@ -1414,9 +1345,9 @@ app.post('/misc/:id/comments', function(req, res){
 //====== END OF ROUTES =====
 //start server
 // process.env.PORT, process.env.IP
-// app.listen(8080,function(){
-// 	console.log("Server is listening...");
-// });
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(8080,function(){
 	console.log("Server is listening...");
 });
+// app.listen(process.env.PORT, process.env.IP, function(){
+// 	console.log("Server is listening...");
+// });

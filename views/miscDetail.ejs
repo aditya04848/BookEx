@@ -133,7 +133,7 @@
 				</h3>
 				<% book.ratings.forEach(function(rating){ %>
 				<hr>
-					<h6 style="display: inline-block; "><%= rating.author.firstname %> <%= rating.author.lastname %></h6>
+					<h6 style="display: inline-block; "><%= rating.firstname %> <%= rating.lastname %></h6>
 					<p style="display: inline-block; float: right; padding: 0 45px; font-size:13px">Rating: <%= rating.rating %></p>
 					<p style="padding: 0 45px; font-size:13px;">
 						<%= rating.text %>
