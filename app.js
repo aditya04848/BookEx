@@ -1061,6 +1061,8 @@ app.delete('/ebooks/:id', async function(req, res){
 	})
 });
 
+// Edit Ebook
+
 // Ratings and Comments for Ebooks
 app.get('/ebooks/:id/comment', function(req, res){
 	Ebook.findById(req.params.id, function(err, data){
@@ -1345,9 +1347,9 @@ app.post('/misc/:id/comments', function(req, res){
 //====== END OF ROUTES =====
 //start server
 // process.env.PORT, process.env.IP
-app.listen(8080,function(){
-	console.log("Server is listening...");
-});
-// app.listen(process.env.PORT, process.env.IP, function(){
+// app.listen(8080,function(){
 // 	console.log("Server is listening...");
 // });
+app.listen(process.env.PORT, process.env.IP, function(){
+	console.log("Server is listening...");
+});
