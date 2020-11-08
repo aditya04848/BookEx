@@ -1059,6 +1059,48 @@ app.get('/ebooks/:id', function(req, res){
 	});
 });
 
+// Delete Ebooks
+app.delete('/ebooks/:id', async function(req, res){
+	var fileId = Ebook.findById(req.params.id, function(err, data){
+		if(err) console.log(err);
+		else {
+			return data.file_id;
+		}
+	});
+	
+	let tokenDetails = await fetch("https://accounts.google.com/o/oauth2/token", {
+        "method": "POST",
+        "body": JSON.stringify({
+            "client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
+            "client_secret": "bcNyHqPiFtsXUpTDUwme213T",
+            "refresh_token": req.user.doc.refreshToken,
+            "grant_type": "refresh_token",
+        })
+    });
+    tokenDetails = await tokenDetails.json();
+    const accessToken = tokenDetails.access_token;
+    
+    const oauth2Client = new google.auth.OAuth2();
+    oauth2Client.setCredentials({'access_token': accessToken});
+    
+    const drive = google.drive({
+        version: 'v3',
+        auth: oauth2Client
+    });
+	
+	drive.files.delete({
+		fileId: fileId,
+	});
+	
+	Ebook.findById(req.params.id, function(err, ebook){
+		if(err) console.log(err);
+		else{
+			ebook.remove();
+			res.redirect('/ebooks');
+		}
+	})
+});
+
 // Ratings and Comments for Ebooks
 app.get('/ebooks/:id/comment', function(req, res){
 	Ebook.findById(req.params.id, function(err, data){
@@ -1365,11 +1407,13 @@ app.post('/misc/:id/comments', function(req, res){
             res.redirect('/misc/'+book._id.toString());
         }
 	})
-})
-
+});
 //====== END OF ROUTES =====
 //start server
 // process.env.PORT, process.env.IP
+// app.listen(8080,function(){
+// 	console.log("Server is listening...");
+// });
 app.listen(process.env.PORT, process.env.IP, function(){
 	console.log("Server is listening...");
 });
