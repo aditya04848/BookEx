@@ -156,6 +156,7 @@ function calculateAverage(reviews) {
     return sum / reviews.length;
 }
 
+
 //Landing Route
 app.get('/', function(req, res){
 	res.render('landingPage',{message : req.flash('notif')});
@@ -656,13 +657,15 @@ app.post('/books/:id/comments', function(req,res){
 						rating.author.lastname = req.user.lastname;
 					}
 					else{
-						rating.author.id = req.user.doc._id;
+						rating.author._id = req.user.doc._id;
 						rating.author.username =req.user.doc.username;
 						rating.author.firstname = req.user.doc.firstname;
 						rating.author.lastname = req.user.doc.lastname;
 					}
 					rating.save();
-					book.ratings.push(rating);
+					console.log(rating);
+					// rating : {rating: 4 , ratings: []}
+					book.ratings.push(rating); //error shown here
 					book.rating = calculateAverage(book.ratings);
 					book.save();
 				}
@@ -1128,7 +1131,7 @@ app.post('/ebooks/:id/comments', function(req, res){
                         rating.author.lastname = req.user.lastname;
                     }
                     else{
-                        rating.author.id = req.user.doc._id;
+                        rating.author._id = req.user.doc._id;
                         rating.author.username =req.user.doc.username;
                         rating.author.firstname = req.user.doc.firstname;
                         rating.author.lastname = req.user.doc.lastname;
@@ -1393,7 +1396,7 @@ app.post('/misc/:id/comments', function(req, res){
                         rating.author.lastname = req.user.lastname;
                     }
                     else{
-                        rating.author.id = req.user.doc._id;
+                        rating.author._id = req.user.doc._id;
                         rating.author.username =req.user.doc.username;
                         rating.author.firstname = req.user.doc.firstname;
                         rating.author.lastname = req.user.doc.lastname;
