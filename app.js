@@ -402,7 +402,7 @@ app.get('/books/:id/edit', function(req, res){
 		if(err) {
 			console.log(err);
 		} else {
-			res.render('editbook', {book: data});
+			res.render('editbook', {book: data, editing: 'book'});
 		}
 	});
 });
@@ -613,7 +613,7 @@ app.get('/books/:id/comment', function(req, res){
 		if(err)
 			console.log(err);
 		else
-			res.render('commentPage', {record: data});
+			res.render('commentPage', {record: data, commenting: 'books'});
 	});
 });
 
@@ -1059,6 +1059,49 @@ app.get('/ebooks/:id', function(req, res){
 	});
 });
 
+// Ratings and Comments for Ebooks
+app.get('/ebooks/:id/comment', function(req, res){
+	Ebook.findById(req.params.id, function(err, data){
+		if(err) console.log(err);
+		else res.render('commentPage', {records: data, commenting: 'ebooks'});
+	})
+})
+
+app.post('/ebooks/:id/comments', function(req, res){
+	Ebook.findById(req.params.id, function(err, book){
+		if(err){
+            console.log(err);
+        }
+        else{
+            Rating.create({rating: req.body.rating, text: req.body.comment}, function(err, rating){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    if(req.user.doc==null)
+                    {
+                        rating.author._id = req.user._id;
+                        rating.author.username = req.user.username;
+                        rating.author.firstname = req.user.firstname;
+                        rating.author.lastname = req.user.lastname;
+                    }
+                    else{
+                        rating.author.id = req.user.doc._id;
+                        rating.author.username =req.user.doc.username;
+                        rating.author.firstname = req.user.doc.firstname;
+                        rating.author.lastname = req.user.doc.lastname;
+                    }
+                    rating.save();
+                    book.ratings.push(rating);
+                    book.rating = calculateAverage(book.ratings);
+                    book.save();
+                }
+            });
+            res.redirect('/ebooks/'+book._id.toString());
+        }
+	})
+});
+
 // Miscellaneous Items
 app.get('/misc', function(req, res){
 	if(req.query.search) {
@@ -1207,6 +1250,122 @@ app.get('/misc/:id/cart', function(req, res){
 		});
 	}
 });
+
+// Edit Miscellaneous
+app.get('/misc/:id/edit', function(req, res){
+	var miscData = Misc.findById(req.params.id);
+	miscData.exec(function(err, data){
+		if(err) console.log(err);
+		else res.render('editbook', {book: data, editing: 'miscellaneous'});
+	})
+});
+
+app.put('/misc/:id', upload.single('image'), function(req, res){
+	Misc.findById(req.params.id, async function(err, book){
+		 if(err){
+            console.log(err);
+        } else {
+            if (req.file) {
+              try {
+                  await cloudinary.uploader.destroy(book.imageId);
+                  var result = await cloudinary.uploader.upload(req.file.path);
+                  book.imageId = result.public_id;
+                  book.image = result.secure_url;
+              } catch(err) {
+                  console.log(err);
+              }
+            }
+            book.title = req.body.title;
+            book.price = req.body.price;
+            book.is_display = false;
+            book.description = req.body.description;
+            book.save();
+            if(err) {
+                console.log(err);
+            } else
+            {
+                const mailOptions = {
+                  from: '"KitabBuddy Admin" <kitabbuddy1234@gmail.com>',
+                  to: book.uploader,
+                  subject: 'Thank you! for showing a kind heart.',
+                  html: "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><hr><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+book.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+book.title+"</h1><h6 style='text-align:center;'>By: "+book.author+"</h6><hr><p>"+book.description+"</p></div></div>"
+                };
+
+                transporter.sendMail(mailOptions, function(error, info){
+                  if (error) {
+                    console.log(error);
+                  } else {
+                    console.log('Email sent: ' + info.response);
+                    res.redirect('/books');
+                  }
+                });
+            // res.redirect("/books/" + book._id);
+            }
+        }
+	});
+});
+
+// Delete Miscellaneous Items
+app.delete('/misc/:id', function(req, res){
+	Misc.findById(req.params.id, async function(err, item){
+		if(err) console.log(err);
+		else{
+			try{
+				await cloudinary.uploader.destroy(item.imageId);
+				item.remove();
+				res.redirect('/misc');
+			}
+			catch(err) {
+				if(err) console.log(err);
+			}
+		}
+	});
+});
+
+// Ratings and Comments for Miscellaneous
+app.get('/misc/:id/comment', function(req, res){
+	Misc.findById(req.params.id, function(err, data){
+		if(err) console.log(err);
+		else {
+			res.render('commentPage', {record: data, commenting: 'misc'});
+		}
+	});
+});
+
+app.post('/misc/:id/comments', function(req, res){
+	Misc.findById(req.params.id, function(err, book){
+		if(err){
+            console.log(err);
+        }
+        else{
+            Rating.create({rating: req.body.rating, text: req.body.comment}, function(err, rating){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    if(req.user.doc==null)
+                    {
+                        rating.author._id = req.user._id;
+                        rating.author.username = req.user.username;
+                        rating.author.firstname = req.user.firstname;
+                        rating.author.lastname = req.user.lastname;
+                    }
+                    else{
+                        rating.author.id = req.user.doc._id;
+                        rating.author.username =req.user.doc.username;
+                        rating.author.firstname = req.user.doc.firstname;
+                        rating.author.lastname = req.user.doc.lastname;
+                    }
+                    rating.save();
+                    book.ratings.push(rating);
+                    book.rating = calculateAverage(book.ratings);
+                    book.save();
+                }
+            });
+            res.redirect('/misc/'+book._id.toString());
+        }
+	})
+})
 
 //====== END OF ROUTES =====
 //start server
