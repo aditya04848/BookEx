@@ -29,6 +29,7 @@ var express                     = require("express"),
     flash                       = require('express-flash-messages'),
 	Ebook						= require('./models/eBook'),
 	Misc						= require('./models/Misc'),
+	notif						= require('./models/notif'),
 	async 						= require('async');
 mongoose.connect("mongodb+srv://BookEx:7230429adi@cluster0.fcnj1.mongodb.net/ualu_app?retryWrites=true&w=majority",{useUnifiedTopology:true, useNewUrlParser:true});
 app.use(express.static("assets"));
@@ -148,7 +149,16 @@ cloudinary.config({
 
 //Landing Route
 app.get('/', function(req, res){
-	res.render('landingPage',{message : req.flash('notif')});
+	if(req.isAuthenticated()) {
+		User.findById(req.user.doc._id, function(err, user){
+			if(err) console.log(err);
+			console.log(user.seen);
+			res.render('landingPage', {show: true, seen: user.seen});
+		});
+	}
+	else {
+		res.render('landingPage', {show: false});
+	}
 });  
 //=====AUTH Routes=====
 // Sign Up Routes
@@ -156,7 +166,16 @@ app.get('/signup', function(req,res){
 	res.render('signUpPage');
 });
 app.get('/about-us', function(req, res){
-	res.render('aboutUs');
+	if(req.isAuthenticated()) {
+        User.findById(req.user.doc._id, function(err, user){
+            if(err) console.log(err);
+            res.render('aboutUs', {show: true, seen: user.seen});
+        });
+    }
+    else {
+        res.render('aboutUs', {show: false});
+   }
+	// res.render('aboutUs');
 });
 app.get('/signup/detail', function(req,res){
 	res.render('userDetail');
@@ -286,7 +305,16 @@ app.get('/books/page/:page',function(req, res){
 					console.log(err);
 				} else {
 					var string = encodeURIComponent(req.query.search);
-					res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+					if(req.isAuthenticated()) {
+						User.findById(req.user.doc._id, function(err, user){
+							if(err) console.log(err);
+							res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
+						});
+					}
+					else {
+						res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
+				   }
+					// res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
 					// console.log(data);
 				}
 			});
@@ -303,7 +331,16 @@ app.get('/books/page/:page',function(req, res){
 					console.log(err);
 				} else {
 					var string = "";
-					res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+					if(req.isAuthenticated()) {
+						User.findById(req.user.doc._id, function(err, user){
+							if(err) console.log(err);
+							res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
+						});
+					}
+					else {
+						res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
+				   }
+					// res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
 				}
 			});
 		});	
@@ -338,8 +375,23 @@ app.post('/books', upload.single('image'), function(req,res){
 				console.log(err);
 			} else 
 			{
-				// Notification Required
-				res.redirect('/books');
+				const mailOptions = {
+				  from: '"KitabBuddy Admin" <kitabbuddy1234@gmail.com>',
+				  to: book.uploader,
+				  subject: 'Thank you! for showing a kind heart.',
+				  html: "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><hr><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+book.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>		<h1 style='text-align:center;'>"+book.title+"</h1><h6 style='text-align:center;'>By: "+book.author+"</h6><hr><p>"+book.description+"</p></div></div>"
+				};
+
+				transporter.sendMail(mailOptions, function(error, info){
+				  if (error) {
+					console.log(error);
+				  } else {
+				    console.log('Email sent: ' + info.response);
+					res.redirect('/books');
+				  }
+				});
+				
+				// res.redirect("/books");
 			}
 		});
 	});
@@ -372,7 +424,7 @@ app.get('/books/:id', function(req, res){
 });
 
 app.get('/books/:id/edit', function(req, res){
-	var bookData = Book.findById(req.params.id);
+	var bookData = Book.findById(req.params.id); // query
 	bookData.exec(function(err, data){
 		if(err) {
 			console.log(err);
@@ -407,8 +459,22 @@ app.put("/books/:id", upload.single('image'), function(req, res){
 				console.log(err);
 			} else 
 			{
-				// Notification Required
-				res.redirect("/books/" + book._id);
+				const mailOptions = {
+				  from: '"KitabBuddy Admin" <kitabbuddy1234@gmail.com>',
+				  to: book.uploader,
+				  subject: 'Thank you! for showing a kind heart.',
+				  html: "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><hr><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+book.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>		<h1 style='text-align:center;'>"+book.title+"</h1><h6 style='text-align:center;'>By: "+book.author+"</h6><hr><p>"+book.description+"</p></div></div>"
+				};
+
+				transporter.sendMail(mailOptions, function(error, info){
+				  if (error) {
+					console.log(error);
+				  } else {
+				    console.log('Email sent: ' + info.response);
+					res.redirect('/books');
+				  }
+				});
+			// res.redirect("/books/" + book._id);
         	}
     	}
 	});
@@ -495,7 +561,21 @@ app.get('/signup/google/callback',
 			res.redirect('/signup/detail');
 		}
 	else{
-		res.redirect('/');
+		// Adding Notification
+		var message = "Welcome to BookEx";
+		var new_notif = new notif({
+			content: message
+		});
+		new_notif.save();
+		User.findById(req.user.doc._id, function(err, user){
+			if(err) console.log(err);
+			else {
+				user.notification.push(new_notif);
+				user.seen = false;
+				user.save();
+				res.redirect('/');
+			}
+		});
 	}
   });
 
@@ -530,8 +610,16 @@ app.get('/books/:id/buy', function(req, res){
 // Mail Send Route
 app.get('/books/:id/accepted', function(req, res){
 	Book.findById(req.params.id, function(err, book) {
-		// Notification Required
-		res.redirect('/books');
+		User.findById(req.user.doc._id, function(err, buyer){
+			var book = Book.findById(req.params.id);
+			User.findById(book.uploader, function(err, seller){
+				// send notification to seller
+				var seller_message = "";
+				
+				// send notification to buyer
+			});
+		});
+		res.redirect('/');
 	});
 });
 
@@ -540,15 +628,28 @@ app.get('/books/:id/accepted', function(req, res){
 app.get('/mybooks', function(req, res){
 	if(req.isAuthenticated())
 	{
-		var booksData = Book.find({});
-		// Ebook, Misc
-		booksData.exec(function(err, data){
+		var booksData = Book.find({}); // query
+		var ebookData =	Ebook.find({});
+		var miscData  =	Misc.find({});
+
+		booksData.exec(function(err, Booksdata){
 			if(err) {
 				console.log(err);
 			} else {
-				res.render('myBooks', {records: data});
+				ebookData.exec(function(err, Ebooksdata){
+					if(err) console.log(err);
+					else {
+						miscData.exec(function(err, Miscdata){
+							if(err) console.log(err);
+							else {
+								var data = Booksdata.concat(Miscdata,Ebooksdata);
+								res.render('myBooks', {records: data});
+							}
+						})
+					}
+				})
 			}
-		});
+	    });
 	}
 	else{
 		res.redirect('/signin');
@@ -689,11 +790,11 @@ app.get('/:id/accepted', function(req, res) {
 	});
 	res.redirect('/');
 });
-//////////////////////////////////////////////////////
-app.get('/notif', function(req, res){
-    req.flash('notify', 'This is a test notification.')
-    res.render('landingPage')
-})
+// //////////////////////////////////////////////////////
+// app.get('/notif', function(req, res){
+//     req.flash('notify', 'This is a test notification.')
+//     res.render('landingPage')
+// })
 //////////////////////////////////////////////////////
 
 // Pagination
@@ -788,20 +889,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 	});
 	let { filename, mimetype, path } = req.file;
 	let stream = require('stream');
-  
-				const mailOptions = {
-                  from: '"KitabBuddy Admin" <kitabbuddy1234@gmail.com>',
-                  to: book.uploader,
-                  subject: 'YAY!! You got a customer!',
-                  html: "Hello there! Hope you are having a good day.<br>Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer.<br><strong>Best of Luck!</strong><br>The user deatils are provided below: <br><hr>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+"<br>Email ID: "+req.user.doc.username+"<br>Phone Number: "+req.user.doc.mobileno+"<br><h3>Please delete your book from the site once you have sold it.</h3>"
-                };
-				 transporter.sendMail(mailOptions, function(error, info){
-                  if (error) {
-                    console.log(error);
-                  } else {
-                    console.log('Email sent: ' + info.response);
-                  }
-                });  let fileObject = req.file;
+    let fileObject = req.file;
     let bufferStream = new stream.PassThrough();
     bufferStream.end(fileObject.buffer);
 
@@ -943,7 +1031,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 								  Ebook.create(req.body.newBook, function(err, ebook){
 									  if(err) console.log(err);
 									  else {
-										  res.redirect('/ebooks');
+										  res.redirect('/books');
 									  }
 								  })
 				  }
@@ -1029,196 +1117,12 @@ app.get('/ebooks/:id/edit', function(req, res){
 	})
 });
 
-app.put('/ebooks/:id', pdfuploadf.single('pdf_file'), async function(req, res){
+app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
 	Ebook.findByIdd(req.params.id, function(err, ebook){
 		if(err) console.log(err);
 		else {
 			if(req.file) {
 				// Delete the previous file and commit the new file
-				let tokenDetails = await fetch("https://accounts.google.com/o/oauth2/token", {
-					"method": "POST",
-					"body": JSON.stringify({
-						"client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
-						"client_secret": "bcNyHqPiFtsXUpTDUwme213T",
-						"refresh_token": req.user.doc.refreshToken,
-						"grant_type": "refresh_token",
-					})
-				});
-				tokenDetails = await tokenDetails.json();
-				const accessToken = tokenDetails.access_token;
-
-				const oauth2Client = new google.auth.OAuth2();
-				oauth2Client.setCredentials({'access_token': accessToken});
-
-				const drive = google.drive({
-					version: 'v3',
-					auth: oauth2Client
-				});
-				
-				// Delete file
-				var delete_fileId = Ebook.findById(req.params.id, function(err, data){
-					if(err) console.log(err);
-					else {
-						return data.file_id;
-					}
-				});
-				drive.files.delete({
-					fileId: delete_fileId,
-				});
-				
-				// Add new file
-				let { filename, mimetype, path } = req.file;
-				let stream = require('stream');
-				let fileObject = req.file;
-				let bufferStream = new stream.PassThrough();
-				bufferStream.end(fileObject.buffer);
-
-				let folderId;
-				User.findById(req.user.doc._id, function(err, user){
-					folderId = user.folder_id;
-					if(user.folder_id == null) {
-					var folderMetadata = {
-						'name': 'Kitab Buddy',
-						  'mimeType': 'application/vnd.google-apps.folder'
-					};
-					drive.files.create(
-						{
-							resource: folderMetadata,
-							fields: 'id'
-						},
-						function(err, folder)
-						{
-							if(err)
-								console.log(err);
-							else
-							{
-								User.findById(req.user.doc._id, function(err, user) {
-									user.folder_id = folder.data.id;
-									user.save();
-								});
-								drive.files.create(
-								{
-									requestBody:
-									{
-										name: filename,
-										mimeType: mimetype,
-										parents: [folder.data.id],
-										fields: 'id'
-									},
-									media:
-									{
-										mimeType: mimetype,
-										body: fs.createReadStream(path)
-									}
-								},
-								function(err, file_uploaded)
-								{
-									if(err)
-										console.log(err);
-									else
-									{
-										// change file permissions
-										var fileId = file_uploaded.data.id;
-										var permissions = [
-										  {
-											'type': 'anyone',
-											'role': 'writer'
-										  }
-										];
-										// Using the NPM module 'async'
-										async.eachSeries(permissions, function (permission, permissionCallback)
-										{
-											drive.permissions.create(
-											{
-												resource: permission,
-												fileId: fileId,
-												fields: 'id',
-											  },
-											function (err, res)
-											{
-												if (err) {
-													  // Handle error...
-													  console.error(err);
-													  permissionCallback(err);
-												} else {
-												  permissionCallback();
-												}
-											  });
-										}, function (err) {
-										  if (err) {
-											// Handle error
-											console.error(err);
-										  } else {
-											  req.body.newBook.file_id = fileId;
-												req.body.newBook.uploader = req.user.doc.username;
-											  Ebook.create(req.body.newBook, function(err, ebook){
-												  if(err) console.log(err);
-												  else {
-													  res.redirect('/books');
-												  }
-											  })
-										  }
-										});
-									}
-								});
-							}});
-				} else {
-					drive.files.create({
-					requestBody: {
-						name: filename,
-						mimeType: mimetype,
-						parents: [user.folder_id],
-						fields: 'id'
-					},
-					media: {
-						mimeType: mimetype,
-						body: fs.createReadStream(path)
-					}},
-					function(err, file_uploaded){
-						if(err) console.log(err);
-						else{
-							// change file permissions
-							var fileId = file_uploaded.data.id;
-							var permissions = [
-							  {
-								'type': 'anyone',
-								'role': 'writer'
-							  }
-							];
-							// Using the NPM module 'async'
-							async.eachSeries(permissions, function (permission, permissionCallback) {
-							  drive.permissions.create({
-								resource: permission,
-								fileId: fileId,
-								fields: 'id',
-							  }, function (err, res) {
-								if (err) {
-								  // Handle error...
-								  console.error(err);
-								  permissionCallback(err);
-								} else {
-								  permissionCallback();
-								}
-							  });
-							}, function (err) {
-							  if (err) {
-								// Handle error
-								console.error(err);
-							  } else {
-								// All permissions inserted
-								  req.body.newBook.file_id = fileId;
-									req.body.newBook.uploader = req.user.doc.username;
-								  Ebook.create(req.body.newBook, function(err, ebook){
-									  if(err) console.log(err);
-									  else {
-										  res.redirect('/ebooks');
-									  }
-								  })
-							  }
-							});
-						}
-					});
-				}
 			}
 			
 			ebook.title = req.body.title;
@@ -1608,8 +1512,9 @@ app.put('/misc/:id', upload.single('image'), function(req, res){
                 console.log(err);
             } else
             {
-				res.redirect("/misc/" + book._id);	
-			}
+				// Notification Required
+				res.redirect('/misc');
+            }
         }
 	});
 });
@@ -1662,12 +1567,53 @@ app.post('/misc/:id/comments', function(req, res){
         }
 	})
 });
+
+app.get('/notif', function(req, res){
+	User.findById(req.user.doc._id).populate('notification').exec(function(err, user){
+		if(err) console.log(err);
+		else {
+			user.seen = true;
+			user.save();
+			res.render('notificationPage', {Data: user});
+		}
+	})
+});
+
+app.get('/notif/:id/delete', function(req, res){
+	var UserData = User.findById(req.user.doc._id);
+	UserData.populate('notification').exec(function(err, data){
+		if(err) console.log(err);
+		else {
+			var len = data.notification.length;
+			for(var i=0; i<len; i++) {
+				if(data.notification[i]._id.toString() == req.params.id.toString()) {
+					data.notification.splice(i, 1);
+					break;
+				}
+			}
+			data.save();
+			res.redirect('/notif');
+		}
+	});
+});
+
+app.get('/notif/deleteall', function(req, res){
+	User.findById(req.user.doc._id, function(err, data){
+		if(err) console.log(err);
+		else {
+			data.notification.splice(0, data.notification.length);
+			data.save();
+			res.redirect('/notif');
+		}
+	})
+})
+
 //====== END OF ROUTES =====
 //start server
 // process.env.PORT, process.env.IP
-// app.listen(8080,function(){
-// 	console.log("Server is listening...");
-// });
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(8080,function(){
 	console.log("Server is listening...");
 });
+// app.listen(process.env.PORT, process.env.IP, function(){
+// 	console.log("Server is listening...");
+// });

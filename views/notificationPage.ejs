@@ -1,16 +1,19 @@
 <% include partials/header %>
-		<!-- Navbar Begins -->
+<!-- Navbar Begins -->
+
 
 <body>
-		<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-				  <a class="navbar-brand mb-0 h1" href="/">BookEx</a>
-				  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				  </button>
 
-				  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-					  <ul class="navbar-nav mr-auto">
-						  <li class="nav-item my-auto"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+		  <a class="navbar-brand mb-0 h1" href="/">BookEx</a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		  </button>
+
+		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+			  <ul class="navbar-nav mr-auto">
+				  <li class="nav-item my-auto"><a class="nav-link" href="/" style="margin: 0 10px;">Home</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/books" style="margin: 0 10px;">Books</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/ebooks" style="margin: 0 10px;">E-Books/PDFs</a></li>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/misc" style="margin: 0 10px;">Miscellaneous</a></li>
@@ -18,9 +21,9 @@
 				  <% if(currentUser != null) {%>
 				  <li class="nav-item my-auto"><a class="nav-link" href="/mybooks" style="margin: 0 10px;">My Books</a></li>
 				  <% } %>
-					  </ul>
-					<ul class="navbar-nav ml-auto">
-						<% if (!currentUser) { %>
+			  </ul>
+			<ul class="navbar-nav ml-auto">
+				<% if (!currentUser) { %>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
 						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
@@ -46,47 +49,45 @@
 					</form>
 				</li>
 				<% } %>
-					</ul>
+			</ul>
+			
+		  </div>
+		</nav>
 
-				  </div>
-				</nav>
+<!-- End of Navbar -->
 	
-	<!-- Navbar Ends -->
-	<h1 style="margin:100px;"></h1>
-	
-	<!-- About Us Begins -->
-	
-<div class="about-section", style="text-align:center;border:5px solid black;margin:50px;margin-top:10px">
-  <h1>About Us</h1>
-	<h3><i>
-		<p>We, developers at <b>BookEx</b> are self motivated individuals thriving to build something useful to our community. </p>
-	</i></h3>
-	<h2 style="text-align:center;margin-bottom:20px">Our Team</h2>
-	<div style="margin-left:500px;margin-bottom:40px">
-		<div class="row">
-		  <div class="column">
-			<div class="card">
-			  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSwr_NIrqN1njFg8lMyyKEetVIUnmjrUhh1tQ&usqp=CAU" alt="Atul Singh" style="width:82%;margin:auto">
-			  <div class="container">
-				<h2>Atul singh</h2>
-				<p class="title">Developer</p>
-				<p>atul.as72@gmail.com</p>
-			  </div>
+	<div class="container" style="margin: 100px auto">
+		<h1>
+			Notifications
+		</h1>
+		<hr style="border: 1px solid black">
+		
+<!-- 	Notifications	 -->
+		
+		<% console.log("Data = ", Data); for(const book of Data.notification) { %>
+		<div style="width: 100%; height: auto;">
+			<div style="padding: 10px; height: 100%; width: 90%; display: inline-block; text-align:center;">
+				<p>
+					<% if(book.seen == false) { %>
+					<strong><%= book.content %></strong>
+					<% book.seen = true; book.save(); } else { %>
+					<%= book.content %>
+					<% } %>
+				</p>
+			</div>
+			<!-- Remove -->
+			<div style="padding: 10px; height: 100%; width: 5%; display: inline-block; text-align:center;">
+				<a href="/notif/<%= book._id %>/delete"><i class="fa fa-trash" style="color: red;font-size: 28px;"></i></a>
 			</div>
 		</div>
-
-	  <div class="column">
-		<div class="card">
-		  <img src="https://i.imgur.com/viv72I8.jpg?1" alt="Aditya Anand" style="width:50%;margin:auto">
-		  <div class="container">
-			<h2>Aditya Anand</h2>
-			<p class="title">Developer</p>
-			<p>aditya04848@gmail.com</p>
-		  </div>
+		<hr>
+		<% } %>
+		<% if(Data.notification.length!=0) { %>
+		<div style="float:right;">
+			<a href= '/notif/deleteall' class="btn btn-outline-success">Clear all Notifications</a>
 		</div>
-	  </div>
+		<%}%>
 	</div>
-</div>
-  <!-- About Us Ends -->
 	
+
 <% include partials/footer %>

@@ -21,7 +21,12 @@ var UserSchema = new mongoose.Schema({
 	}],
 	cart_items: {type: Number, default: 0},
 	total_price: {type: Number, default: 0},
-	folder_id: {type: String, default: null}
+	folder_id: {type: String, default: null},
+	notification: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref : "notif"
+	}],
+	seen: {type: Boolean, default: true}
 });
 
 UserSchema.plugin(passportLocalMongoose);
