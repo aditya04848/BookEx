@@ -32,6 +32,13 @@
 					</form>
 				</li>
 				<% } else { %>
+						<li class="nav-item">
+                    <% if(show) { console.log(seen); if(seen) { %>
+                    <a href="/notif"><i class="far fa-bell btn-lg"></i></a>
+                    <% } else { %>
+                    <a href="/notif"><i class="fas fa-bell btn-lg" style=" background-color: blue; color: white; "></i></a>
+                    <% } } %>
+                </li>
 				<li class="nav-item" style="text-align: center;">
 					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
 					<br>

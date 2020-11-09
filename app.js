@@ -349,8 +349,12 @@ app.get('/books/page/:page',function(req, res){
 // New Book Route
 app.get('/books/new', function(req, res){
 	if(req.isAuthenticated()){
-			res.render('newbooks');
-		}
+		User.findById(req.user.doc._id, function(err, user){
+            if(err) console.log(err);
+            res.render('newbooks', {show: true, seen: user.seen});
+        });
+			// res.render('newbooks');
+	}
 	else{
 		res.redirect("/signup");
 	}
@@ -358,12 +362,30 @@ app.get('/books/new', function(req, res){
 });
 // My Book Route
 app.get('/books/mybook', function(req, res){
-	res.render('myBook');
+	if(req.isAuthenticated()) {
+        User.findById(req.user.doc._id, function(err, user){
+            if(err) console.log(err);
+            res.render('myBook', {show: true, seen: user.seen});
+        });
+    }
+    else {
+        res.redirect('/signin');
+   }
+	// res.render('myBook');
 });
 // cart Route
-app.get('/books/cart', function(req, res){
-	res.render('cart');
-});
+// app.get('/books/cart', function(req, res){
+// 	if(req.isAuthenticated()) {
+//         User.findById(req.user.doc._id, function(err, user){
+//             if(err) console.log(err);
+//             res.render('.......', {show: true, seen: user.seen});
+//         });
+//     }
+//     else {
+//         res.redirect('signin');
+//    }
+// 	// res.render('cart');
+// });
 app.post('/books', upload.single('image'), function(req,res){
 	cloudinary.uploader.upload(req.file.path, function(result) {
   // add cloudinary url for the image to the campground object under image property
@@ -375,22 +397,20 @@ app.post('/books', upload.single('image'), function(req,res){
 				console.log(err);
 			} else 
 			{
-				const mailOptions = {
-				  from: '"KitabBuddy Admin" <kitabbuddy1234@gmail.com>',
-				  to: book.uploader,
-				  subject: 'Thank you! for showing a kind heart.',
-				  html: "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><hr><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+book.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>		<h1 style='text-align:center;'>"+book.title+"</h1><h6 style='text-align:center;'>By: "+book.author+"</h6><hr><p>"+book.description+"</p></div></div>"
-				};
-
-				transporter.sendMail(mailOptions, function(error, info){
-				  if (error) {
-					console.log(error);
-				  } else {
-				    console.log('Email sent: ' + info.response);
-					res.redirect('/books');
-				  }
+				var message = "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a notification will be shown here once verification is done.<br>Below are the details uploaded by you.<br><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+book.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+book.title+"</h1><h6 style='text-align:center;'>By: "+book.author+"</h6><hr><p>"+book.description+"</p></div></div>";
+				var new_notif = new notif({
+					content: message
 				});
-				
+				new_notif.save();
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					else {
+						user.notification.push(new_notif);
+						user.seen = false;
+						user.save();
+						res.redirect('/books');
+					}
+				});	
 				// res.redirect("/books");
 			}
 		});
@@ -418,7 +438,16 @@ app.get('/books/:id', function(req, res){
               data.rating = rating / length;
               data.save();
             }
-			res.render('bookDetail', {book: data});
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('bookDetail', {book: data, show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.render('bookDetail', {book: data, show: false});
+		   }
+			// res.render('bookDetail', {book: data});
 		}
 	});
 });
@@ -429,7 +458,16 @@ app.get('/books/:id/edit', function(req, res){
 		if(err) {
 			console.log(err);
 		} else {
-			res.render('editbook', {book: data, editing: 'books'});
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('editbook', {book: data, editing: 'books', show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.redirect('/signin');
+		   }
+			// res.render('editbook', {book: data, editing: 'books'});
 		}
 	});
 });
@@ -459,20 +497,19 @@ app.put("/books/:id", upload.single('image'), function(req, res){
 				console.log(err);
 			} else 
 			{
-				const mailOptions = {
-				  from: '"KitabBuddy Admin" <kitabbuddy1234@gmail.com>',
-				  to: book.uploader,
-				  subject: 'Thank you! for showing a kind heart.',
-				  html: "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><hr><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+book.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>		<h1 style='text-align:center;'>"+book.title+"</h1><h6 style='text-align:center;'>By: "+book.author+"</h6><hr><p>"+book.description+"</p></div></div>"
-				};
-
-				transporter.sendMail(mailOptions, function(error, info){
-				  if (error) {
-					console.log(error);
-				  } else {
-				    console.log('Email sent: ' + info.response);
-					res.redirect('/books');
-				  }
+				var message = "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+book.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+book.title+"</h1><h6 style='text-align:center;'>By: "+book.author+"</h6><hr><p>"+book.description+"</p></div></div>";
+				var new_notif = new notif({
+					content: message
+				});
+				new_notif.save();
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					else {
+						user.notification.push(new_notif);
+						user.seen = false;
+						user.save();
+						res.redirect("/books/" + book._id);
+					}
 				});
 			// res.redirect("/books/" + book._id);
         	}
@@ -562,20 +599,7 @@ app.get('/signup/google/callback',
 		}
 	else{
 		// Adding Notification
-		var message = "Welcome to BookEx";
-		var new_notif = new notif({
-			content: message
-		});
-		new_notif.save();
-		User.findById(req.user.doc._id, function(err, user){
-			if(err) console.log(err);
-			else {
-				user.notification.push(new_notif);
-				user.seen = false;
-				user.save();
-				res.redirect('/');
-			}
-		});
+		res.redirect('/');
 	}
   });
 
@@ -602,8 +626,18 @@ app.get('/books/:id/buy', function(req, res){
 	Book.findById(req.params.id, function(err, data){
 		if(err)
 			console.log(err);
-		else
-			res.render('buybook.ejs', {records: data, buying: 'books'});
+		else{
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('buybook', {records: data, buying: 'books', show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.redirect('/signin');
+		   }
+			// res.render('buybook.ejs', {records: data, buying: 'books'});
+		}
 	});
 });
 
@@ -614,12 +648,28 @@ app.get('/books/:id/accepted', function(req, res){
 			var book = Book.findById(req.params.id);
 			User.findById(book.uploader, function(err, seller){
 				// send notification to seller
-				var seller_message = "";
+				var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" Email ID: "+req.user.doc.username+" Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+				var seller_new_notif = new notif({
+					content: seller_message
+				});
+				seller_new_notif.save();
+				seller.notification.push(seller_new_notif);
+				seller.seen = false;
+				seller.save();
 				
 				// send notification to buyer
+				var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller.firstname+" "+seller.lastname+" Email ID: "+seller.username+" Phone Number: "+seller.mobileno;
+				var buyer_new_notif = new notif({
+					content: buyer_message
+				});
+				buyer_new_notif.save();
+				buyer.notification.push(buyer_new_notif);
+				buyer.seen = false;
+				buyer.save();
+				
+				res.redirect('/');
 			});
 		});
-		res.redirect('/');
 	});
 });
 
@@ -643,7 +693,16 @@ app.get('/mybooks', function(req, res){
 							if(err) console.log(err);
 							else {
 								var data = Booksdata.concat(Miscdata,Ebooksdata);
-								res.render('myBooks', {records: data});
+								if(req.isAuthenticated()) {
+									User.findById(req.user.doc._id, function(err, user){
+										if(err) console.log(err);
+										res.render('myBooks', {records: data, show: true, seen: user.seen});
+									});
+								}
+								else {
+									res.redirect('/signup');
+							   }
+								// res.render('myBooks', {records: data});
 							}
 						})
 					}
@@ -663,7 +722,16 @@ app.get('/books/:id/comment', function(req, res){
 		if(err)
 			console.log(err);
 		else
-			res.render('commentPage', {record: data, commenting: 'books'});
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('commentPage', {record: data, commenting: 'books', show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.redirect('/signin');
+		   }
+			// res.render('commentPage', {record: data, commenting: 'books'});
 	});
 });
 
@@ -733,7 +801,16 @@ app.get('/:id/cart', function(req, res){
 		if(err)
 			console.log(err);
 		else{
-			res.render('cart', {books: data});
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('cart', {books: data, show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.redirect('/signin');
+		   }
+			// res.render('cart', {books: data});
 		}
 	});
 });
@@ -768,7 +845,16 @@ app.get('/:id1/cart/:id2', function(req, res){
 
 // Cart Buy Implementation
 app.get('/:id/buy', function(req, res) {
-	res.render('buyCart');
+	if(req.isAuthenticated()) {
+        User.findById(req.user.doc._id, function(err, user){
+            if(err) console.log(err);
+            res.render('buyCart', {show: true, seen: user.seen});
+        });
+    }
+    else {
+        res.redirect('/signin');
+   }
+	// res.render('buyCart');
 
 });
 
@@ -777,10 +863,32 @@ app.get('/:id/accepted', function(req, res) {
 		if(err)
 			console.log(err);
 		user.cart.forEach(function(book_id, index){
-			Book.findById(book_id, function(err, book){
-				if(err)
-					console.log(err);
-				// Notification Required
+			Book.findById(book_id, function(err, book) {
+				User.findById(req.user.doc._id, function(err, buyer){
+					var book = Book.findById(book_id);
+					User.findById(book.uploader, function(err, seller){
+						// send notification to seller
+						var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" Email ID: "+req.user.doc.username+" Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+						var seller_new_notif = new notif({
+							content: seller_message
+						});
+						seller_new_notif.save();
+						seller.notification.push(seller_new_notif);
+						seller.seen = false;
+						seller.save();
+
+						// send notification to buyer
+						var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller.firstname+" "+seller.lastname+" Email ID: "+seller.username+" Phone Number: "+seller.mobileno;
+						var buyer_new_notif = new notif({
+							content: buyer_message
+						});
+						buyer_new_notif.save();
+						buyer.notification.push(buyer_new_notif);
+						buyer.seen = false;
+						buyer.save();
+
+					});
+				});
 			});
 		});	
 		user.cart.splice(0, user.cart_items);
@@ -844,7 +952,16 @@ app.get('/ebooks/page/:page', function(req, res){
 				if(err) console.log(err);
 				else {
 					var string = encodeURIComponent(req.query.search);
-					res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+					if(req.isAuthenticated()) {
+						User.findById(req.user.doc._id, function(err, user){
+							if(err) console.log(err);
+							res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
+						});
+					}
+					else {
+						res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
+				   }
+					// res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
 				}
 			})
 		})
@@ -859,7 +976,15 @@ app.get('/ebooks/page/:page', function(req, res){
 				if(err) console.log(err);
 				else {
 					var string = "";
-					res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+					if(req.isAuthenticated()) {
+						User.findById(req.user.doc._id, function(err, user){
+							if(err) console.log(err);
+							res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
+						});
+					}
+					else {
+						res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
+				   }
 				}
 			})
 		})
@@ -974,7 +1099,21 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 								  Ebook.create(req.body.newBook, function(err, ebook){
 									  if(err) console.log(err);
 									  else {
-										  res.redirect('/books');
+										  var message = "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><iframe src='https://drive.google.com/file/d/"+ebook.file_id+"/preview' width height style='height:300px; margin-bottom: 5px;'></iframe></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+ebook.title+"</h1><h6 style='text-align:center;'>By: "+ebook.author+"</h6><hr><p>"+ebook.description+"</p></div></div>";
+										var new_notif = new notif({
+											content: message
+										});
+										new_notif.save();
+										User.findById(req.user.doc._id, function(err, user){
+											if(err) console.log(err);
+											else {
+												user.notification.push(new_notif);
+												user.seen = false;
+												user.save();
+												res.redirect("/ebooks");
+											}
+										});
+										  // res.redirect('/ebooks');
 									  }
 								  })
 							  }
@@ -1031,7 +1170,21 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 								  Ebook.create(req.body.newBook, function(err, ebook){
 									  if(err) console.log(err);
 									  else {
-										  res.redirect('/books');
+										  var message = "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><iframe src='https://drive.google.com/file/d/"+ebook.file_id+"/preview' width height style='height:300px; margin-bottom: 5px;'></iframe></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+ebook.title+"</h1><h6 style='text-align:center;'>By: "+ebook.author+"</h6><hr><p>"+ebook.description+"</p></div></div>";
+										var new_notif = new notif({
+											content: message
+										});
+										new_notif.save();
+										User.findById(req.user.doc._id, function(err, user){
+											if(err) console.log(err);
+											else {
+												user.notification.push(new_notif);
+												user.seen = false;
+												user.save();
+												res.redirect("/ebooks");
+											}
+										});
+										  // res.redirect('/books');
 									  }
 								  })
 				  }
@@ -1062,7 +1215,16 @@ app.get('/ebooks/:id', function(req, res){
               data.rating = rating / length;
               data.save();
             }
-			res.render('ebookDetail', {book: data});
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('ebookDetail', {book: data, show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.render('ebookDetail', {book: data, show: false});
+		   }
+			// res.render('ebookDetail', {book: data});
 		}
 	});
 });
@@ -1113,23 +1275,17 @@ app.delete('/ebooks/:id', async function(req, res){
 app.get('/ebooks/:id/edit', function(req, res){
 	var ebookdata = Ebook.findById(req.params.id, function(err, data){
 		if(err) console.log(err);
-		else res.render('editbook', {book: data, editing: 'ebooks'})
-	})
-});
-
-app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
-	Ebook.findByIdd(req.params.id, function(err, ebook){
-		if(err) console.log(err);
 		else {
-			if(req.file) {
-				// Delete the previous file and commit the new file
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('editbook', {book: data, editing: 'ebooks', show: true, seen: user.seen});
+				});
 			}
-			
-			ebook.title = req.body.title;
-            ebook.is_display = false;
-            ebook.description = req.body.description;
-            ebook.save();
-			res.redirect('/ebooks/'+ebook._id);
+			else {
+				res.redirect('/signin');
+		   }
+			// res.render('editbook', {book: data, editing: 'ebooks'})
 		}
 	})
 });
@@ -1245,7 +1401,21 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
                                   Ebook.create(req.body.newBook, function(err, ebook){
                                       if(err) console.log(err);
                                       else {
-                                          res.redirect('/books');
+										  var message = "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><iframe src='https://drive.google.com/file/d/"+ebook.file_id+"/preview' width height style='height:300px; margin-bottom: 5px;'></iframe></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+ebook.title+"</h1><h6 style='text-align:center;'>By: "+ebook.author+"</h6><hr><p>"+ebook.description+"</p></div></div>";
+										var new_notif = new notif({
+											content: message
+										});
+										new_notif.save();
+										User.findById(req.user.doc._id, function(err, user){
+											if(err) console.log(err);
+											else {
+												user.notification.push(new_notif);
+												user.seen = false;
+												user.save();
+												res.redirect("/ebooks/" + ebook._id);
+											}
+										});
+                                          // res.redirect('/books');
                                       }
                                   })
                               }
@@ -1302,7 +1472,22 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
                                   Ebook.create(req.body.newBook, function(err, ebook){
                                       if(err) console.log(err);
                                       else {
-                                          res.redirect('/books');
+										  
+										  var message = "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><iframe src='https://drive.google.com/file/d/"+ebook.file_id+"/preview' width height style='height:300px; margin-bottom: 5px;'></iframe></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+ebook.title+"</h1><h6 style='text-align:center;'>By: "+ebook.author+"</h6><hr><p>"+ebook.description+"</p></div></div>";
+										var new_notif = new notif({
+											content: message
+										});
+										new_notif.save();
+										User.findById(req.user.doc._id, function(err, user){
+											if(err) console.log(err);
+											else {
+												user.notification.push(new_notif);
+												user.seen = false;
+												user.save();
+												res.redirect("/ebooks/" + ebook._id);
+											}
+										});
+                                          // res.redirect('/books');
                                       }
                                   })
                   }
@@ -1317,7 +1502,18 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
 app.get('/ebooks/:id/comment', function(req, res){
 	Ebook.findById(req.params.id, function(err, data){
 		if(err) console.log(err);
-		else res.render('commentPage', {record: data, commenting: 'ebooks'});
+		else {
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('commentPage', {record: data, commenting: 'ebooks', show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.redirect('/signin');
+		   }
+			// res.render('commentPage', {record: data, commenting: 'ebooks'});
+		}
 	})
 })
 
@@ -1370,7 +1566,16 @@ app.get('/misc/page/:page', function(req, res){
                     console.log(err);
                 } else {
                     var string = encodeURIComponent(req.query.search);
-                    res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+					if(req.isAuthenticated()) {
+						User.findById(req.user.doc._id, function(err, user){
+							if(err) console.log(err);
+							res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
+						});
+					}
+					else {
+						res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
+				   }
+                    // res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
                     // console.log(data);
                 }
             });
@@ -1386,9 +1591,18 @@ app.get('/misc/page/:page', function(req, res){
                 if(err) {
                     console.log(err);
                 } else {
-                    var string = "";
-					console.log('count', count);
-                    res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+                    var string = "";					
+					if(req.isAuthenticated()) {
+						User.findById(req.user.doc._id, function(err, user){
+							if(err) console.log(err);
+							res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
+						});
+					}
+					else {
+						res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
+				   }
+					// console.log('count', count);
+                    // res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
                 }
             });
         });    
@@ -1404,7 +1618,21 @@ app.post('/misc', upload.single('image'), function(req, res){
 		Misc.create(req.body.newBook, function(err, obj){
 			if(err) console.log(err);
 			else {
-				res.redirect("/misc");
+				var message = "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a notification will be shown here once verification is done.<br>Below are the details uploaded by you.<br><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+obj.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+obj.title+"</h1><hr><p>"+obj.description+"</p></div></div>";
+				var new_notif = new notif({
+					content: message
+				});
+				new_notif.save();
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					else {
+						user.notification.push(new_notif);
+						user.seen = false;
+						user.save();
+						res.redirect('/misc');
+					}
+				});	
+				// res.redirect("/misc");
 			}
 		});
 	});
@@ -1428,7 +1656,16 @@ app.get('/misc/:id', function(req, res){
 				data.rating = rating/length;
 				data.save();
 			}
-			res.render('miscDetail', {book: data});
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('miscDetail', {book: data, show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.render('miscDetail', {book: data, show: false});
+		   }
+			// res.render('miscDetail', {book: data});
 		}
 	});
 });
@@ -1437,14 +1674,50 @@ app.get('/misc/:id', function(req, res){
 app.get('/misc/:id/buy', function(req, res){
 	Misc.findById(req.params.id, function(err, data){
 		if(err) console.log(err);
-		else res.render('buybook', {records: data, buying: 'misc'});
+		else {
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('buybook', {records: data, buying: 'misc', show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.redirect('/signin');
+		   }
+			// res.render('buybook', {records: data, buying: 'misc'});
+		}
 	});
 });
 
 app.get('/misc/:id/accepted', function(req, res){
 	Misc.findById(req.params.id, function(err, book){
 		// Notification required
-		res.redirect('/');
+		User.findById(req.user.doc._id, function(err, buyer){
+            var book = Book.findById(req.params.id);
+            User.findById(book.uploader, function(err, seller){
+                // send notification to seller
+                var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" Email ID: "+req.user.doc.username+" Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+                var seller_new_notif = new notif({
+                    content: seller_message
+                });
+                seller_new_notif.save();
+                seller.notification.push(seller_new_notif);
+                seller.seen = false;
+                seller.save();
+                
+                // send notification to buyer
+                var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller.firstname+" "+seller.lastname+" Email ID: "+seller.username+" Phone Number: "+seller.mobileno;
+                var buyer_new_notif = new notif({
+                    content: buyer_message
+                });
+                buyer_new_notif.save();
+                buyer.notification.push(buyer_new_notif);
+                buyer.seen = false;
+                buyer.save();
+                
+                res.redirect('/');
+            });
+        });
 	});
 });
 
@@ -1484,7 +1757,18 @@ app.get('/misc/:id/edit', function(req, res){
 	var miscData = Misc.findById(req.params.id);
 	miscData.exec(function(err, data){
 		if(err) console.log(err);
-		else res.render('editbook', {book: data, editing: 'misc'});
+		else {
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('editbook', {book: data, editing: 'misc', show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.redirect('/signin');
+		   }
+			// res.render('editbook', {book: data, editing: 'misc'});
+		}
 	})
 });
 
@@ -1513,7 +1797,21 @@ app.put('/misc/:id', upload.single('image'), function(req, res){
             } else
             {
 				// Notification Required
-				res.redirect('/misc');
+				var message = "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+book.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+book.title+"</h1><hr><p>"+book.description+"</p></div></div>";
+                var new_notif = new notif({
+                    content: message
+                });
+                new_notif.save();
+                User.findById(req.user.doc._id, function(err, user){
+                    if(err) console.log(err);
+                    else {
+                        user.notification.push(new_notif);
+                        user.seen = false;
+                        user.save();
+                        res.redirect("/misc/" + book._id);
+                    }
+                });
+				// res.redirect('/misc/' + book._id);
             }
         }
 	});
@@ -1541,7 +1839,16 @@ app.get('/misc/:id/comment', function(req, res){
 	Misc.findById(req.params.id, function(err, data){
 		if(err) console.log(err);
 		else {
-			res.render('commentPage', {record: data, commenting: 'misc'});
+			if(req.isAuthenticated()) {
+				User.findById(req.user.doc._id, function(err, user){
+					if(err) console.log(err);
+					res.render('commentPage', {record: data, commenting: 'misc', show: true, seen: user.seen});
+				});
+			}
+			else {
+				res.redirect('/signin');
+		   }
+			// res.render('commentPage', {record: data, commenting: 'misc'});
 		}
 	});
 });
@@ -1569,12 +1876,15 @@ app.post('/misc/:id/comments', function(req, res){
 });
 
 app.get('/notif', function(req, res){
+	if(!req.isAuthenticated()) {
+		res.redirect('/signin');
+	}
 	User.findById(req.user.doc._id).populate('notification').exec(function(err, user){
 		if(err) console.log(err);
 		else {
 			user.seen = true;
 			user.save();
-			res.render('notificationPage', {Data: user});
+			res.render('notificationPage', {show: true, seen: user.seen, Data: user});
 		}
 	})
 });
@@ -1611,9 +1921,9 @@ app.get('/notif/deleteall', function(req, res){
 //====== END OF ROUTES =====
 //start server
 // process.env.PORT, process.env.IP
-// app.listen(8080,function(){
-// 	console.log("Server is listening...");
-// });
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(8080,function(){
 	console.log("Server is listening...");
 });
+// app.listen(process.env.PORT, process.env.IP, function(){
+// 	console.log("Server is listening...");
+// });
