@@ -645,20 +645,20 @@ app.get('/books/:id/buy', function(req, res){
 app.get('/books/:id/accepted', function(req, res){
 	Book.findById(req.params.id, function(err, book) {
 		User.findById(req.user.doc._id, function(err, buyer){
-			var book = Book.findById(req.params.id);
-			User.findById(book.uploader, function(err, seller){
+			User.find({'username': book.uploader}, function(err, seller){
 				// send notification to seller
-				var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" Email ID: "+req.user.doc.username+" Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+				var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
 				var seller_new_notif = new notif({
 					content: seller_message
 				});
 				seller_new_notif.save();
-				seller.notification.push(seller_new_notif);
-				seller.seen = false;
-				seller.save();
+				console.log("Seller: ", seller);
+				seller[0].notification.push(seller_new_notif);
+				seller[0].seen = false;
+				seller[0].save();
 				
 				// send notification to buyer
-				var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller.firstname+" "+seller.lastname+" Email ID: "+seller.username+" Phone Number: "+seller.mobileno;
+				var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller[0].firstname+" "+seller[0].lastname+" <br>Email ID: "+seller[0].username+" <br>Phone Number: "+seller[0].mobileno;
 				var buyer_new_notif = new notif({
 					content: buyer_message
 				});
@@ -865,20 +865,19 @@ app.get('/:id/accepted', function(req, res) {
 		user.cart.forEach(function(book_id, index){
 			Book.findById(book_id, function(err, book) {
 				User.findById(req.user.doc._id, function(err, buyer){
-					var book = Book.findById(book_id);
-					User.findById(book.uploader, function(err, seller){
+					User.findById({'username': book.uploader}, function(err, seller){
 						// send notification to seller
-						var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" Email ID: "+req.user.doc.username+" Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+						var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
 						var seller_new_notif = new notif({
 							content: seller_message
 						});
 						seller_new_notif.save();
-						seller.notification.push(seller_new_notif);
-						seller.seen = false;
-						seller.save();
+						seller[0].notification.push(seller_new_notif);
+						seller[0].seen = false;
+						seller[0].save();
 
 						// send notification to buyer
-						var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller.firstname+" "+seller.lastname+" Email ID: "+seller.username+" Phone Number: "+seller.mobileno;
+						var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller[0].firstname+" "+seller[0].lastname+" <br>Email ID: "+seller[0].username+" <br>Phone Number: "+seller[0].mobileno;
 						var buyer_new_notif = new notif({
 							content: buyer_message
 						});
@@ -1693,20 +1692,19 @@ app.get('/misc/:id/accepted', function(req, res){
 	Misc.findById(req.params.id, function(err, book){
 		// Notification required
 		User.findById(req.user.doc._id, function(err, buyer){
-            var book = Book.findById(req.params.id);
-            User.findById(book.uploader, function(err, seller){
+            User.findById({'username': book.uploader}, function(err, seller){
                 // send notification to seller
-                var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" Email ID: "+req.user.doc.username+" Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+                var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
                 var seller_new_notif = new notif({
                     content: seller_message
                 });
                 seller_new_notif.save();
-                seller.notification.push(seller_new_notif);
-                seller.seen = false;
-                seller.save();
+                seller[0].notification.push(seller_new_notif);
+                seller[0].seen = false;
+                seller[0].save();
                 
                 // send notification to buyer
-                var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller.firstname+" "+seller.lastname+" Email ID: "+seller.username+" Phone Number: "+seller.mobileno;
+                var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller[0].firstname+" "+seller[0].lastname+" <br>Email ID: "+seller[0].username+" <br>Phone Number: "+seller[0].mobileno;
                 var buyer_new_notif = new notif({
                     content: buyer_message
                 });
@@ -1921,9 +1919,9 @@ app.get('/notif/deleteall', function(req, res){
 //====== END OF ROUTES =====
 //start server
 // process.env.PORT, process.env.IP
-// app.listen(8080,function(){
-// 	console.log("Server is listening...");
-// });
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(8080,function(){
 	console.log("Server is listening...");
 });
+// app.listen(process.env.PORT, process.env.IP, function(){
+// 	console.log("Server is listening...");
+// });
