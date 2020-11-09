@@ -71,7 +71,7 @@
 		
 <!-- 	Notifications	 -->
 		
-		<% console.log("Data = ", Data); for(const book of Data.notification) { %>
+		<% console.log("Data = ", Data); for(const book of Data.notification.slice().reverse()) { %>
 		<div style="width: 100%; height: auto;">
 			<div style="padding: 10px; height: 100%; width: 90%; display: inline-block; text-align:center;">
 				<p>
