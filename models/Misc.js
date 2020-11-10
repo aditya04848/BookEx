@@ -6,6 +6,7 @@ var MiscSchema = new mongoose.Schema({
     image : String,
     imageId: String,
     uploader : String,
+	author: {type: String, default: ""},
 	price: String,
     ratings: [
         {

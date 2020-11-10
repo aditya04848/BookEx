@@ -75,26 +75,26 @@
 		
 <!-- 	Books	 -->
 		
-		<% for(const book of books.cart) {%>
+		<% console.log(books.cart); for(const book of books.cart) {%>
 		<div style="width: 100%; height: auto;">
 			<div style="padding: 10px; height: 100%; width: 20%; display: inline-block; text-align:center;">
-				<img src="<%= book.image.replace((book.image).split('/')[(book.image).split('/').length - 2], 'w_500,f_auto') %>" alt="..." class="img-thumbnail" style="object-fit: contain; height: auto; margin: 10px;">
+				<img src="<%= book.item_id.image.replace((book.item_id.image).split('/')[(book.item_id.image).split('/').length - 2], 'w_500,f_auto') %>" alt="..." class="img-thumbnail" style="object-fit: contain; height: auto; margin: 10px;">
 			</div>	
 			<!-- Title -->
 			<div style="padding: 10px; height: 100%; width: 50%; display: inline-block; text-align:center;">
-				<h5 style="display: inline-block; "><a href="/books/<%= book._id %>" style="
+				<h5 style="display: inline-block; "><a href="/books/<%= book.item_id._id %>" style="
     color: black;
-"><%= book.title %></a></h5>
+"><%= book.item_id.title %></a></h5>
 			</div>
 			<!-- Price -->
 			<div style="padding: 10px; height: 100%; width: 20%; display: inline-block; text-align:center;">
 				<p>
-					<i class="fa fa-inr"></i> <%= book.price %>
+					<i class="fa fa-inr"></i> <%= book.item_id.price %>
 				</p>
 			</div>
 			<!-- Remove -->
 			<div style="padding: 10px; height: 100%; width: 5%; display: inline-block; text-align:center;">
-				<a href="/<%= currentUser._id.toString() %>/cart/<%= book._id.toString() %>"><i class="fa fa-trash" style="color: red;font-size: 28px;"></i></a>
+				<a href="/<%= currentUser._id.toString() %>/cart/<%= book.item_id._id.toString() %>"><i class="fa fa-trash" style="color: red;font-size: 28px;"></i></a>
 			</div>
 		</div>
 		<hr>

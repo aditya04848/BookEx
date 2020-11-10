@@ -35,7 +35,7 @@
 				</li>
 				<% } else { %>
 				<li class="nav-item">
-                    <% if(show) { console.log(seen); if(seen) { %>
+                    <% if(show) {if(seen) { %>
                     <a href="/notif"><i class="far fa-bell btn-lg"></i></a>
                     <% } else { %>
                     <a href="/notif"><i class="fas fa-bell btn-lg" style=" background-color: blue; color: white; "></i></a>
@@ -92,7 +92,7 @@
         		<textarea class="form-control" name= "description" id="InputDescription" placeholder="Description"><%= book.description %></textarea>
         	</div>
   		</div>
-		<% if(editing != 'ebooks') %>
+		<% if(editing != 'ebooks') { %>
 		<div class="form-group row">
     		<label for="inputImage" class="col-sm-2 col-form-label">Image</label>
 			<div class="col">

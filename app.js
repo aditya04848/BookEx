@@ -784,7 +784,7 @@ app.post('/books/:id/cart', function(req, res){
 				if(err)
 					console.log(err);
 				Book.findById(req.params.id, function(err, book){
-					user.cart.push(book);
+					user.cart.push({'item_id': book,'itemModel': "Book"});
 					user.cart_items = user.cart_items + 1;
 					user.total_price = user.total_price + parseInt(book.price);
 					user.save();
@@ -797,7 +797,7 @@ app.post('/books/:id/cart', function(req, res){
 app.get('/:id/cart', function(req, res){
 	var UserData;
 	UserData = User.findById(req.params.id);
-	UserData.populate('cart').exec(function(err, data){
+	UserData.populate('cart.item_id').exec(function(err, data){
 		if(err)
 			console.log(err);
 		else{
@@ -863,32 +863,73 @@ app.get('/:id/accepted', function(req, res) {
 		if(err)
 			console.log(err);
 		user.cart.forEach(function(book_id, index){
-			Book.findById(book_id, function(err, book) {
-				User.findById(req.user.doc._id, function(err, buyer){
-					User.findById({'username': book.uploader}, function(err, seller){
-						// send notification to seller
-						var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
-						var seller_new_notif = new notif({
-							content: seller_message
-						});
-						seller_new_notif.save();
-						seller[0].notification.push(seller_new_notif);
-						seller[0].seen = false;
-						seller[0].save();
+			console.log("Book ID: ", book_id);
+			
+			if(book_id.itemModel == 'Book') {
+				// For itemModel = 'Book' book->id = book_id.item_id;
+				Book.findById(book_id.item_id, function(err, book) {
+					console.log("Book: ", book);
+					User.findById(req.user.doc._id, function(err, buyer){
+						console.log("Buyer: ", buyer);
+						User.find({'username': book.uploader}, function(err, seller){
+							console.log("Seller: ", seller);
+							// send notification to seller
+							var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+							var seller_new_notif = new notif({
+								content: seller_message
+							});
+							seller_new_notif.save();
+							seller[0].notification.push(seller_new_notif);
+							seller[0].seen = false;
+							seller[0].save();
 
-						// send notification to buyer
-						var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller[0].firstname+" "+seller[0].lastname+" <br>Email ID: "+seller[0].username+" <br>Phone Number: "+seller[0].mobileno;
-						var buyer_new_notif = new notif({
-							content: buyer_message
-						});
-						buyer_new_notif.save();
-						buyer.notification.push(buyer_new_notif);
-						buyer.seen = false;
-						buyer.save();
+							// send notification to buyer
+							var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller[0].firstname+" "+seller[0].lastname+" <br>Email ID: "+seller[0].username+" <br>Phone Number: "+seller[0].mobileno;
+							var buyer_new_notif = new notif({
+								content: buyer_message
+							});
+							buyer_new_notif.save();
+							buyer.notification.push(buyer_new_notif);
+							buyer.seen = false;
+							buyer.save();
 
+						});
 					});
 				});
-			});
+				
+			}
+			else {
+				// For itemModel = 'Misc' book->id = book_id.item_id;
+				Misc.findById(book_id.item_id, function(err, book) {
+					console.log("Misc: ", book);
+					User.findById(req.user.doc._id, function(err, buyer){
+						console.log("Buyer: ", buyer);
+						User.find({'username': book.uploader}, function(err, seller){
+							console.log("Seller: ", seller);
+							// send notification to seller
+							var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+							var seller_new_notif = new notif({
+								content: seller_message
+							});
+							seller_new_notif.save();
+							seller[0].notification.push(seller_new_notif);
+							seller[0].seen = false;
+							seller[0].save();
+
+							// send notification to buyer
+							var buyer_message = "Hello there! Hope you are having a good day. Your just bought product <strong>"+book.title+"</strong>. Its now your time to deal with the Uploader. <strong>Best of Luck!</strong> The Uploader deatils are provided below: <br>Name: "+seller[0].firstname+" "+seller[0].lastname+" <br>Email ID: "+seller[0].username+" <br>Phone Number: "+seller[0].mobileno;
+							var buyer_new_notif = new notif({
+								content: buyer_message
+							});
+							buyer_new_notif.save();
+							buyer.notification.push(buyer_new_notif);
+							buyer.seen = false;
+							buyer.save();
+
+						});
+					});
+				});
+			}
 		});	
 		user.cart.splice(0, user.cart_items);
 		user.cart_items = 0;
@@ -1692,7 +1733,7 @@ app.get('/misc/:id/accepted', function(req, res){
 	Misc.findById(req.params.id, function(err, book){
 		// Notification required
 		User.findById(req.user.doc._id, function(err, buyer){
-            User.findById({'username': book.uploader}, function(err, seller){
+            User.find({'username': book.uploader}, function(err, seller){
                 // send notification to seller
                 var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
                 var seller_new_notif = new notif({
@@ -1720,35 +1761,36 @@ app.get('/misc/:id/accepted', function(req, res){
 });
 
 // Add misc to cart
-app.get('/misc/:id/cart', function(req, res){
-	if(req.user.doc==null)
-	{
-		User.findById(req.user._id, function(err, user){
-			if(err)
-				console.log(err);
-			Misc.findById(req.params.id, function(err, book){
-				user.cart.push(book);
-				user.cart_items = user.cart_items + 1;
-				user.total_price = user.total_price + parseInt(book.price);
-				user.save();
-				res.redirect('/misc/'+book._id.toString());
+app.post('/misc/:id/cart', function(req, res){
+		if(req.user.doc==null)
+		{
+			User.findById(req.user._id, function(err, user){
+				if(err)
+					console.log(err);
+				Book.findById(req.params.id, function(err, book){
+					user.cart.push(book);
+					user.cart_items = user.cart_items + 1;
+					user.total_price = user.total_price + parseInt(book.price);
+					user.save();
+					res.redirect('/books/'+book._id.toString());
+				});
 			});
-		});
-	}
-	else{
-		User.findById(req.user.doc._id, function(err, user){
-			if(err)
-				console.log(err);
-			Misc.findById(req.params.id, function(err, book){
-				user.cart.push(book);
-				user.cart_items = user.cart_items + 1;
-				user.total_price = user.total_price + parseInt(book.price);
-				user.save();
-				res.redirect('/misc/'+book._id.toString());
+		}
+		else{
+			User.findById(req.user.doc._id, function(err, user){
+				if(err)
+					console.log(err);
+				Misc.findById(req.params.id, function(err, book){
+					user.cart.push({'item_id': book,'itemModel': "Misc"});
+					user.cart_items = user.cart_items + 1;
+					user.total_price = user.total_price + parseInt(book.price);
+					user.save();
+					res.redirect('/misc/'+book._id.toString());
+				});
 			});
-		});
-	}
+		}
 });
+
 
 // Edit Miscellaneous
 app.get('/misc/:id/edit', function(req, res){
