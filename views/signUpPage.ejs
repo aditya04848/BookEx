@@ -27,12 +27,7 @@
 					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
 						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
 					</form>
-				</li>
-				<li class="nav-item">
-					<form class="form-inline my-2 my-lg-0" action="/signin" method="GET">
-						<button class="btn btn-outline-success my-2 my-sm-0" style="margin: 0 10px;">Sign In</button>
-					</form>
-				</li>
+				</li> 
 				<% } else { %>
 				<li class="nav-item" style="text-align: center;">
 					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
@@ -61,65 +56,12 @@
 		<strong>Sign UP</strong>
     </h3>
 	<hr>
-	<form action="/signup" method="POST">
-		<div class="form-group row">
-			<div class="col input-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1"><i class="fa fa-at"></i></span>
-				</div>
-				<input type="email" name="username" class="form-control" id="inputEmail" placeholder="Email - ID">
-			 </div>
-	  	</div>
-		<div class="form-group row">
-			<div class="col input-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1"><i class="fa fa-lock"></i></span>
-				</div>
-				<input type="password" name="password" required class="form-control" id="inputEmail" placeholder="Password">	
-			 </div>
-	  	</div>	
-		<div class="form-group row">
-			<div class="col input-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
-				</div>
-				<input type="name" name="firstname" required class="form-control" id="inputEmail" placeholder="First Name">	
-			 </div>
-			<div class="col input-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
-				</div>
-				<input type="name" name="lastname" required class="form-control" id="inputEmail" placeholder="Last Name">	
-			 </div>
-	  	</div>
-		<div class="form-group row">
-			<div class="col input-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1"><i class="fa fa-phone"></i></span>
-				</div>
-				<input type="number" name="mobileno" required class="form-control" id="inputEmail" placeholder="Mobile Number">	
-			 </div>
-	  	</div>
-		<div class="form-group row">
-			<div class="col input-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1"><i class="fa fa-map-marker"></i></span>
-				</div>
-				<input type="name" name="city" required class="form-control" id="inputEmail" placeholder="City/Town">	
-			 </div>
-	  	</div>	
-		<button class="btn btn-primary btn-lg" type="submit" style="width: 100%">Submit</button>	
-	</form>
-	<div id="or" style="margin: 10px auto">OR</div>
-	<a class="btn btn-outline-dark" href="/signup/google" role="button" style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto;">
+	<a class="btn btn-outline-dark" href="/signup/google" role="button" style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto; border-radius: 52px;">
 		  <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
 		  SignUp with Google
 	</a>
-	<br>
-	<a class="btn btn-outline-primary" href="/signup/facebook" role="button" style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto;">
-		  <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Facebook sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Facebook_f_logo_%282019%29.svg/214px-Facebook_f_logo_%282019%29.svg.png" />
-		  SignUp with Facebook
-	</a>
+	<p style="font-size: 12px; text-align: justify;">
+			<i class="fa fa-exclamation-triangle" style="color:red;"></i> <strong>Please Note:</strong> By Signing In, you agree to share your Email, Profile name and Google Drive access for storage purposes. Your Google Drive will be accessed only for the storage and sharing of files you upload on BookEx. We don't use, view or share any of your other Google Drive files.</p>
 </div>
 
 <!-- <a href="/signup/google">Google</a> -->

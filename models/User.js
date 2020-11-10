@@ -5,15 +5,10 @@ var UserSchema = new mongoose.Schema({
 	username: { type: String, unique:true, lowercase: true },
 	accessToken: String,
 	refreshToken: String,
-	password: String,
 	firstname : String,
 	lastname : String,
 	mobileno : String,
-	city : String,
-	college : String,
   	userid: String,
-	otp: Number,
-	isVerified: {type: Boolean, default: false},
   	updated_at: { type: Date, default: Date.now }, 
 	cart : [{
 		item_id: {

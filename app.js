@@ -162,8 +162,32 @@ app.get('/', function(req, res){
 });  
 //=====AUTH Routes=====
 // Sign Up Routes
+
+function pathExtractor(req) {
+  // Escaping user input to be treated as a literal 
+  // string within a regular expression accomplished by 
+  // simple replacement
+  function escapeRegExp(str) {
+   return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+  }
+  // Replace utility function
+  function replaceAll(str, find, replace) {
+	  console.log(find);
+   return str.replace(new RegExp(escapeRegExp(find), 'g'), replace); 
+  }
+	if(req.get('referer') == null) {
+		return '/';
+	}
+  return req.get('referer').replace('https://'+req.get('host'), '');
+}
+
 app.get('/signup', function(req,res){
-	res.render('signUpPage');
+	console.log(pathExtractor(req));
+	req.session.redirectTo = pathExtractor(req);
+	req.session.save(function(err){
+		if(err) console.log(err);
+		res.render('signUpPage');
+	});
 });
 app.get('/about-us', function(req, res){
 	if(req.isAuthenticated()) {
@@ -263,7 +287,7 @@ app.post('/signup/detail', function(req,res){
 });
 // Sign In Route
 app.get('/signin', function(req,res){
-	res.render('signInPage');
+	res.redirect('/signup');
 });
 app.post("/signin",passport.authenticate("local" ,{ 
 	successRedirect : "/",
@@ -593,13 +617,15 @@ app.get('/signup/google',
 app.get('/signup/google/callback',
   passportGoogle.authenticate('google', { failureRedirect: '/signup' }),
   function(req, res) {
-	if(req.user.doc.city === undefined || req.user.doc.college === undefined || req.user.doc.mobileno === undefined) 
+	if(req.user.doc.mobileno === undefined) 
 		{
 			res.redirect('/signup/detail');
 		}
 	else{
 		// Adding Notification
-		res.redirect('/');
+		console.log("Redirect: ", req.session.redirectTo)
+		res.redirect(req.session.redirectTo || '/');
+    	delete req.session.redirectTo;
 	}
   });
 
@@ -819,16 +845,16 @@ app.get('/:id/cart', function(req, res){
 app.get('/:id1/cart/:id2', function(req, res){
 	var UserData;
 	UserData = User.findById(req.params.id1);
-	UserData.populate('cart').exec(function(err, data){
+	UserData.populate('cart.item_id').exec(function(err, data){
 		if(err)
 			console.log(err);
 		else{
-			UserData.populate('cart').exec(function(err, user){
+			UserData.populate('cart.item_id').exec(function(err, user){
 				var len = user.cart_items;
 				var price = 0;
 				for(var i=0; i<len; i++){
-					if(user.cart[i]._id.toString() == req.params.id2.toString()){
-						price = parseInt(user.cart[i].price);
+					if(user.cart[i].item_id._id.toString() == req.params.id2.toString()){
+						price = parseInt(user.cart[i].item_id.price);
 						// delete user.cart[i];
 						user.cart.splice(i, 1);
 						break;
@@ -1961,9 +1987,9 @@ app.get('/notif/deleteall', function(req, res){
 //====== END OF ROUTES =====
 //start server
 // process.env.PORT, process.env.IP
-// app.listen(8080,function(){
-// 	console.log("Server is listening...");
-// });
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(8080,function(){
 	console.log("Server is listening...");
 });
+// app.listen(process.env.PORT, process.env.IP, function(){
+// 	console.log("Server is listening...");
+// });

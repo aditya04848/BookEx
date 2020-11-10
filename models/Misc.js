@@ -6,8 +6,8 @@ var MiscSchema = new mongoose.Schema({
     image : String,
     imageId: String,
     uploader : String,
-	author: {type: String, default: ""},
-	price: String,
+	is_display: {type: Boolean, default: false},
+	price: Number,
     ratings: [
         {
              type: mongoose.Schema.Types.ObjectId,

@@ -27,12 +27,7 @@
 					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
 						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
 					</form>
-				</li>
-				<li class="nav-item">
-					<form class="form-inline my-2 my-lg-0" action="/signin" method="GET">
-						<button class="btn btn-outline-success my-2 my-sm-0" style="margin: 0 10px;">Sign In</button>
-					</form>
-				</li>
+				</li> 
 				<% } else { %>
 				<li class="nav-item" style="text-align: center;">
 					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
@@ -63,13 +58,13 @@
 				<div class="input-group-prepend">
 					<span class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
 				</div>
-				<input type="text" name="detail[firstname]" class="form-control" id="InputName" placeholder="First name" value="<%= currentUser.firstname %>">
+				<input required type="text" name="detail[firstname]" class="form-control" id="InputName" placeholder="First name" value="<%= currentUser.firstname %>">
 			</div>
 			<div class="col input-group">
 				<div class="input-group-prepend">
 					<span class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
 				</div>
-				<input type="text" name="detail[lastname]" class="form-control" id="InputName" placeholder="Last name" value="<%= currentUser.lastname %>">
+				<input required type="text" name="detail[lastname]" class="form-control" id="InputName" placeholder="Last name" value="<%= currentUser.lastname %>">
 			</div>
 		</div>
 		<div class="form-group row">
@@ -78,25 +73,7 @@
 				<div class="input-group-prepend">
 					<span class="input-group-text" id="basic-addon1"><i class="fa fa-phone"></i></span>
 				</div>
-				<input type="tel" name="detail[mobileno]" class="form-control" id="inputphone" placeholder="Mobile No" value="<%= currentUser.mobileno %>">
-			 </div>
-		</div>
-		<div class="form-group row">
-			<label for="inputCity" class="col-sm-2 col-form-label">City</label>
-			<div class="col input-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1"><i class="fa fa-map-marker"></i></span>
-				</div>
-				<input type="text" name="detail[city]" class="form-control" id="inputCity" placeholder="Eg: Mumbai" value="<%= currentUser.city %>">
-			 </div>
-		</div>
-		<div class="form-group row">
-			<label for="inputSchool" class="col-sm-2 col-form-label">School/College</label>
-			<div class="col input-group">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1"><i class="fa fa-university"></i></span>
-				</div>
-				<input type="text" name="detail[college]" class="form-control" id="inputCollege" placeholder="Eg: IIT Bombay" value="<%= currentUser.college %>">
+				<input required type="tel" pattern="[0-9]{10}", name="detail[mobileno]" class="form-control" id="inputphone" placeholder="Mobile No" value="<%= currentUser.mobileno %>">
 			 </div>
 		</div>
 		<button type="submit" class="btn btn-lg btn-primary" style="margin: 3px 42%">Submit</button>

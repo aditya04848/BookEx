@@ -26,11 +26,6 @@
 						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
 					</form>
 				</li>
-				<li class="nav-item">
-					<form class="form-inline my-2 my-lg-0" action="/signin" method="GET">
-						<button class="btn btn-outline-success my-2 my-sm-0" style="margin: 0 10px;">Sign In</button>
-					</form>
-				</li>
 				<% } else { %>
 				<li class="nav-item">
                     <% if(show) { console.log(seen); if(seen) { %>
@@ -79,37 +74,37 @@
 					 <div class="form-group row">
 						<label for="inputTitle" class="col-sm-2 col-form-label">Title</label>
 						<div class="col">
-							<input type="text" name="newBook[title]" class="form-control" id="inputTitle" placeholder="Title">
+							<input required type="text" name="newBook[title]" class="form-control" id="inputTitle" placeholder="Title">
 						 </div>
 					</div>
 					<div class="form-group row" id="author">
 						<label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
 						<div class="col">
-							<input type="text" name="newBook[author]"class="form-control" id="inputAuthor" placeholder="Author">
+							<input required type="text" name="newBook[author]"class="form-control" id="inputAuthor" placeholder="Author">
 						</div>	
 					</div>
 					<div class="form-group row" id="price-div">
 						<label for="inputPrice" class="col-sm-2 col-form-label">Price</label>
 						<div class="col">
-							<input type="text" name= "newBook[price]" class="form-control" id="inputPrice" placeholder="Price">
+							<input required type="number" name= "newBook[price]" class="form-control" id="inputPrice" placeholder="Price" min="1">
 						 </div>
 					</div>
 					<div class="form-group row">
 						<label for="inputDescription" class="col-sm-2 col-form-label">Description</label>
 						<div class="col">
-							<textarea class="form-control" name= "newBook[description]" id="InputDescription" placeholder="Description"></textarea>
+							<textarea requireds class="form-control" name= "newBook[description]" id="InputDescription" placeholder="Description"></textarea>
 						</div>
 					</div>
 					<div class="form-group row" id="hard-div">
 						<label for="inputImage" class="col-sm-2 col-form-label">Image</label>
 						<div class="col">
-							<input type="file" name = "image" class="form-control-file" id="inputImage" placeholder="Image" accept="image/*">
+							<input required type="file" name = "image" class="form-control-file" id="inputImage" placeholder="Image" accept="image/*">
 						 </div>
 					</div>
 					<div class="form-group row" id="pdf-div" style="display: none;">
 						<label for="inputImage" class="col-sm-2 col-form-label">File</label>
 						<div class="col">
-							<input type="file" name = "pdf_file" class="form-control-file" id="inputImage" placeholder="Image" accept="application/pdf,application/vnd.ms-excel">
+							<input required type="file" name = "pdf_file" class="form-control-file" id="inputImage" placeholder="Image" accept="application/pdf,application/vnd.ms-excel">
 						 </div>
 					</div>
 					<p style="font-size: 12px;">
