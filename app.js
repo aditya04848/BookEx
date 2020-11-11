@@ -435,7 +435,6 @@ app.post('/books', upload.single('image'), function(req,res){
 						res.redirect('/books');
 					}
 				});	
-				// res.redirect("/books");
 			}
 		});
 	});

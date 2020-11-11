@@ -5,7 +5,7 @@
 <body>
 
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" style = "position: relative;">
 		  <a class="navbar-brand mb-0 h1" href="/">BookEx</a>
 		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
@@ -66,7 +66,14 @@
 		
 <!-- 	Notifications	 -->
 		
-		<% console.log("Data = ", Data); for(const book of Data.notification.slice().reverse()) { %>
+		<% if(Data.notification.length == 0) { %>
+		<p style="text-align: center;">
+			<img src="/images/notification.png" style="width: 60%;">
+		</p>
+		<p style="text-align: center;color: #6c63ff;font-size: 3rem;font-family: cursive;">
+			All caught up.
+		</p>
+		<% } else { for(const book of Data.notification.slice().reverse()) { %>
 		<div style="width: 100%; height: auto;">
 			<div style="padding: 10px; height: 100%; width: 90%; display: inline-block; text-align:center;">
 				<p>
@@ -88,7 +95,7 @@
 		<div style="float:right;">
 			<a href= '/notif/deleteall' class="btn btn-outline-success">Clear all Notifications</a>
 		</div>
-		<%}%>
+		<%} }%>
 	</div>
 	
 
