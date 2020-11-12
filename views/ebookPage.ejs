@@ -84,8 +84,9 @@
   <div class="card books" style="
     border: 1.5px solid rgba(0, 0, 0, 0.25);
 ">
-      <div class="card-img-top img-fluid books-img" style="width:100%;height: 250px;overflow: hidden;display:flex;padding: 7px;">
-        <img class="card-img-top img-fluid" src="https://drive.google.com/thumbnail?id=<%= row.file_id %>" alt="Card image cap" style="object-fit: contain;">
+      <div class="card-img-top img-fluid books-img" style="width:100%;height: 250px;overflow: hidden;display:flex;padding: 7px; display: flex;">
+        <img class="card-img-top img-fluid" src="https://drive.google.com/thumbnail?id=<%= row.file_id %>" alt="Card image cap" style="width: 100%; height: auto;flex-grow: 1;
+  object-fit: cover; object-position: top;">
       </div>
 	  <hr style="
     margin-top: 0.5rem;
