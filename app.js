@@ -23,7 +23,6 @@ var express                     = require("express"),
 	Rating						= require('./models/Rating'),
 	Cart						= require('./models/Cart'),
 	{ google }					= require('googleapis'),
-	axios 						= require('axios'),
 	querystring					= require('querystring'),
 	fetch 						= require('node-fetch'),
     flash                       = require('express-flash-messages'),
@@ -575,6 +574,11 @@ app.delete('/books/:id', function(req, res) {
     }
     try {
         await cloudinary.uploader.destroy(book.imageId);
+		book.ratings.forEach(function(rating_id){
+					Rating.findById(rating_id, function(err, rating){
+						rating.remove();
+					});
+				});
         book.remove();
         res.redirect('/books');
     } catch(err) {
@@ -1061,14 +1065,19 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 	let tokenDetails = await fetch("https://accounts.google.com/o/oauth2/token", {
 		"method": "POST",
 		"body": JSON.stringify({
-			"client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
-			"client_secret": "bcNyHqPiFtsXUpTDUwme213T",
+			// "client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
+			// "client_secret": "bcNyHqPiFtsXUpTDUwme213T",
+			"client_id": "921117793019-6r4on28a2c1j8a6tf95ogmp82cpqi7jj.apps.googleusercontent.com",
+			"client_secret": "M3uhkGt4D8RcBQNPUQ0vIROf",
 			"refresh_token": req.user.doc.refreshToken,
 			"grant_type": "refresh_token",
 		})
 	});
+	console.log("Token Details 1: ", tokenDetails);
 	tokenDetails = await tokenDetails.json();
+	console.log("Token Details 2: ", tokenDetails);
 	const accessToken = tokenDetails.access_token;
+	console.log("Access Token: ", accessToken);
 	
 	const oauth2Client = new google.auth.OAuth2();
 	oauth2Client.setCredentials({'access_token': accessToken});
@@ -1306,8 +1315,10 @@ app.delete('/ebooks/:id', async function(req, res){
 	let tokenDetails = await fetch("https://accounts.google.com/o/oauth2/token", {
         "method": "POST",
         "body": JSON.stringify({
-            "client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
-            "client_secret": "bcNyHqPiFtsXUpTDUwme213T",
+			// "client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
+			// "client_secret": "bcNyHqPiFtsXUpTDUwme213T",
+			"client_id": "921117793019-6r4on28a2c1j8a6tf95ogmp82cpqi7jj.apps.googleusercontent.com",
+			"client_secret": "M3uhkGt4D8RcBQNPUQ0vIROf",
             "refresh_token": req.user.doc.refreshToken,
             "grant_type": "refresh_token",
         })
@@ -1330,6 +1341,11 @@ app.delete('/ebooks/:id', async function(req, res){
 	Ebook.findById(req.params.id, function(err, ebook){
 		if(err) console.log(err);
 		else{
+			ebook.ratings.forEach(function(rating_id){
+				Rating.findById(rating_id, function(err, rating){
+					rating.remove();
+				});
+			});
 			ebook.remove();
 			res.redirect('/ebooks');
 		}
@@ -1359,8 +1375,10 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
 	let tokenDetails = await fetch("https://accounts.google.com/o/oauth2/token", {
         "method": "POST",
         "body": JSON.stringify({
-            "client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
-            "client_secret": "bcNyHqPiFtsXUpTDUwme213T",
+			// "client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
+			// "client_secret": "bcNyHqPiFtsXUpTDUwme213T",
+			"client_id": "921117793019-6r4on28a2c1j8a6tf95ogmp82cpqi7jj.apps.googleusercontent.com",
+			"client_secret": "M3uhkGt4D8RcBQNPUQ0vIROf",
             "refresh_token": req.user.doc.refreshToken,
             "grant_type": "refresh_token",
         })
@@ -1889,6 +1907,11 @@ app.delete('/misc/:id', function(req, res){
 		else{
 			try{
 				await cloudinary.uploader.destroy(item.imageId);
+				item.ratings.forEach(function(rating_id){
+					Rating.findById(rating_id, function(err, rating){
+						rating.remove();
+					});
+				});
 				item.remove();
 				res.redirect('/misc');
 			}
@@ -1986,9 +2009,9 @@ app.get('/notif/deleteall', function(req, res){
 //====== END OF ROUTES =====
 //start server
 // process.env.PORT, process.env.IP
-// app.listen(8080,function(){
-// 	console.log("Server is listening...");
-// });
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(8080,function(){
 	console.log("Server is listening...");
 });
+// app.listen(process.env.PORT, process.env.IP, function(){
+// 	console.log("Server is listening...");
+// });

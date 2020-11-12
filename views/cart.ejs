@@ -69,8 +69,14 @@
 		<hr style="border: 1px solid black">
 		
 <!-- 	Books	 -->
-		
-		<% console.log(books.cart); for(const book of books.cart) {%>
+		<% if(books.cart.length == 0) { %>
+		<p style="text-align: center;">
+			<img src="/images/cart.png" style="width: 60%;">
+		</p>
+		<p style="text-align: center;color: #6c63ff;font-size: 3rem;font-family: cursive;">
+			All caught up.
+		</p>
+		<% } else { for(const book of books.cart) {%>
 		<div style="width: 100%; height: auto;">
 			<div style="padding: 10px; height: 100%; width: 20%; display: inline-block; text-align:center;">
 				<img src="<%= book.item_id.image.replace((book.item_id.image).split('/')[(book.item_id.image).split('/').length - 2], 'w_500,f_auto') %>" alt="..." class="img-thumbnail" style="object-fit: contain; height: auto; margin: 10px;">
@@ -93,7 +99,7 @@
 			</div>
 		</div>
 		<hr>
-		<% } %>
+		<% } } %>
 		<% if(books.cart_items!=0) { %>
 		<div style="float:right;">
 			<a href= '/<%= currentUser._id %>/buy' class="btn btn-outline-success">Buy Now!</a>

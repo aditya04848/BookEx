@@ -21,7 +21,7 @@
     "express-session": "^1.17.0",
     "find-or-create": "^2.0.0",
     "fs": "0.0.1-security",
-    "googleapis": "^61.0.0",
+    "googleapis": "^39.2.0",
     "locus": "^2.0.1",
     "method-override": "^3.0.0",
     "mongoose": "^5.7.7",
