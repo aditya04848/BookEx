@@ -181,7 +181,9 @@ function pathExtractor(req) {
 }
 
 app.get('/signup', function(req,res){
-	console.log(pathExtractor(req));
+	if(req.isAuthenticated()){
+		res.redirect('/');
+	}
 	req.session.redirectTo = pathExtractor(req);
 	req.session.save(function(err){
 		if(err) console.log(err);
@@ -833,6 +835,33 @@ app.get('/:id/cart', function(req, res){
 			if(req.isAuthenticated()) {
 				User.findById(req.user.doc._id, function(err, user){
 					if(err) console.log(err);
+					var new_price = 0;
+					var removelist = [];
+					for(var i=0; i< data.cart.length; i++){
+						if(data.cart[i].item_id == null){
+							removelist.push(i);
+						}
+						else {
+							new_price = new_price + data.cart[i].item_id.price;
+						}
+					}
+					for (var i = removelist.length -1; i >= 0; i--) {
+   						data.cart.splice(removelist[i],1);
+					}
+					if(removelist.length > 0) {
+						var message = "<strong>OOPS!</strong>, it seems like <strong>" + removelist.length + "</strong> of your Cart Items have been deleted by the owner and are NO longer available. Hence, this items have been removed from your cart.";
+						var new_notif = new notif({
+							content: message
+						});
+						new_notif.save();
+						data.notification.push(new_notif);
+						data.seen = false;
+						data.cart_items = data.cart_items - removelist.length;
+						data.total_price = new_price;
+						data.save();
+					}
+					
+					
 					res.render('cart', {books: data, show: true, seen: user.seen});
 				});
 			}

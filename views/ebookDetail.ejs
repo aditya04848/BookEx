@@ -36,7 +36,7 @@
 				<% if (!currentUser) { %>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
-						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
+						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Login</button>
 					</form>
 				</li> 
 				<% } else { %>
@@ -48,7 +48,7 @@
                     <% } } %>
                 </li>
 				<li class="nav-item" style="text-align: center;">
-					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
+					<span class="my-2 my-lg-0 mx-4">Logged in as:</span>
 					<br>
 					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
 				</li>
@@ -57,7 +57,7 @@
 				</li>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
-						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Sign Out</button>
+						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Logout</button>
 					</form>
 				</li>
 				<% } %>
@@ -78,7 +78,7 @@
 		<div class="col-lg-6" style="text-align:center; margin-bottom: 50px; pointer-events: none;">
 			<iframe src="https://drive.google.com/file/d/<%= book.file_id %>/preview" width height style="width: inherit; height: 650px;"></iframe>
 			<p>
-				<i class="fa fa-exclamation-triangle" style="color:red;"></i> Please Sign In to be able to view this file completely.
+				<i class="fa fa-exclamation-triangle" style="color:red;"></i> Please Login to be able to view this file completely.
 			</p>
 		</div>
 		<% } %>
@@ -113,14 +113,14 @@
 					<a href='http://drive.google.com/uc?id=<%= book.file_id %>&export=download' class="btn btn-outline-info" target="_blank">Download Now!</a>
 				</div>
 				<div style="float:right;">
-					<a href='https://drive.google.com/file/d/<%= book.file_id %>' class="btn btn-outline-info" target="_blank">Open in new tab</a>
+					<a href='https://drive.google.com/file/d/<%= book.file_id %>' class="btn btn-outline-success" target="_blank">Open in new tab</a>
 				</div>
 			<% }} else { %>
 				<div style="float:left">
-					<a href='/signin' class="btn btn-outline-warning">Sign In to Rate this book</a>
+					<a href='/signin' class="btn btn-outline-warning">Login to Rate this book</a>
 				</div>
 				<div style="float:right;">
-					<a href='/signin' class="btn btn-outline-success">Sign In to Download</a>
+					<a href='/signin' class="btn btn-outline-success">Login to Download</a>
 				</div>
 			<% } %>
 			<br>

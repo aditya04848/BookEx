@@ -25,12 +25,12 @@
 				<% if (!currentUser) { %>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
-						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
+						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Login</button>
 					</form>
 				</li> 
 				<% } else { %>
 				<li class="nav-item" style="text-align: center;">
-					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
+					<span class="my-2 my-lg-0 mx-4">Logged in as:</span>
 					<br>
 					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
 				</li>
@@ -39,7 +39,7 @@
 				</li>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
-						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Sign Out</button>
+						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Logout</button>
 					</form>
 				</li>
 				<% } %>
@@ -53,15 +53,15 @@
 <!-- 	form	 -->
 <div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px; width: 400px;">
 	<h3 style="margin:40px auto 10px auto ;font-size:48px;text-align:center">
-		<strong>Sign UP</strong>
+		<strong>Login</strong>
     </h3>
 	<hr>
 	<a class="btn btn-outline-dark" href="/signup/google" role="button" style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto; border-radius: 52px;">
 		  <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
-		  SignUp with Google
+		  Login with Google
 	</a>
 	<p style="font-size: 12px; text-align: justify;">
-			<i class="fa fa-exclamation-triangle" style="color:red;"></i> <strong>Please Note:</strong> By Signing In, you agree to share your Email, Profile name and Google Drive access for storage purposes. Your Google Drive will be accessed only for the storage and sharing of files you upload on BookEx. We don't use, view or share any of your other Google Drive files.</p>
+			<i class="fa fa-exclamation-triangle" style="color:red;"></i> <strong>Please Note:</strong> By Logging In, you agree to share your Email, Profile name and Google Drive access for storage purposes. Your Google Drive will be accessed only for the storage and sharing of files you upload on BookEx. We don't use, view or share any of your other Google Drive files.</p>
 </div>
 
 <!-- <a href="/signup/google">Google</a> -->

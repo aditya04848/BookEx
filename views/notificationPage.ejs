@@ -26,7 +26,7 @@
 				<% if (!currentUser) { %>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
-						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
+						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Login</button>
 					</form>
 				</li> 
 				<% } else { %>
@@ -38,7 +38,7 @@
                     <% } } %>
                 </li>
 				<li class="nav-item" style="text-align: center;">
-					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
+					<span class="my-2 my-lg-0 mx-4">Logged in as:</span>
 					<br>
 					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
 				</li>
@@ -47,7 +47,7 @@
 				</li>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
-						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Sign Out</button>
+						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Logout</button>
 					</form>
 				</li>
 				<% } %>

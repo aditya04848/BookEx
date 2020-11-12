@@ -24,7 +24,7 @@
 				<% if (!currentUser) { %>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signup" method="GET">
-						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Sign Up</button>
+						<button class="btn btn-outline-info my-2 my-sm-0" style="margin: 0 10px;">Login</button>
 					</form>
 				</li>
 				<% } else { %>
@@ -36,7 +36,7 @@
                     <% } } %>
                 </li>
 				<li class="nav-item" style="text-align: center;">
-					<span class="my-2 my-lg-0 mx-4">Signed in as:</span>
+					<span class="my-2 my-lg-0 mx-4">Logged in as:</span>
 					<br>
 					<span class="my-2 my-lg-0 mx-4"><%= currentUser.firstname %> <%= currentUser.lastname %></span>
 				</li>
@@ -45,7 +45,7 @@
 				</li>
 				<li class="nav-item">
 					<form class="form-inline my-2 my-lg-0" action="/signout" method="GET">
-						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Sign Out</button>
+						<button class="btn btn-outline-danger my-2 my-sm-0" style="margin: 0 10px;">Logout</button>
 					</form>
 				</li>
 				<% } %>
@@ -66,7 +66,7 @@
 		  <% if(row.price != "") { %>
 		<img class="card-img-top img-fluid" src="<%= row.image.replace((row.image).split('/')[(row.image).split('/').length - 2], 'w_300,f_auto') %>" alt="Card image cap" style="object-fit: contain;">
 		  <% } else { %>
-		  <img class="card-img-top img-fluid" src="https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg" alt="Card image cap" style="object-fit: contain;">
+		  <img class="card-img-top img-fluid" src="https://drive.google.com/thumbnail?id=<%= row.file_id %>" alt="Card image cap" style="object-fit: contain;">
 		  <% } %>
 	  </div>
 	<hr style="
@@ -102,17 +102,21 @@
 	</div>
 		</div>
   </div>
+</div>
 	<% }}); if(count == 0) {%>
-		<div class="container" style="border: 1px solid black ; margin:10% auto; border-radius:10px; width: 400px; text-align: center;">
-	<img src="https://cdn.iconscout.com/icon/free/png-512/data-not-found-1965034-1662569.png" style="
-    width: 300px;
-    height: auto;
-">
-	<hr>
-	<p>It seems like you have not uploaded any book.</p>
-			<a href='/books/new' class="btn btn-outline-primary"style="text-transform:none; width: 100%; padding: 15px; margin: 20px auto;">Lend a book now!</a>
-</div>
+	<div class="container" style="margin: 100px auto">
+		<p style="text-align: center;">
+			<img src="/images/uploads.png" style="width: 60%;">
+		</p>
+		<p style="text-align: center;color: #6c63ff;font-size: 3rem;font-family: cursive;">
+			No Uploads.
+		</p>
+		<form action='/books/new'>
+			<div style="text-align: center;">
+							<button type="submit" class="btn btn-lg" style="margin: 3px auto;border-radius: 24px;width: 40%; background-color: #6c63ff; color: white;">Lend Now!</button>
+			</div>
+		</form>
+	</div>
 	<% } %>
-</div>
 	
 <% include partials/footer %>
