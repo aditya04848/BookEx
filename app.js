@@ -1142,7 +1142,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 							parents: [folder.data.id],
 							fields: 'id'
 						},
-						media: 
+						media:
 						{
 							mimeType: mimetype,
 							body: fs.createReadStream(path)
