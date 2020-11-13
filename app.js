@@ -151,7 +151,6 @@ app.get('/', function(req, res){
 	if(req.isAuthenticated()) {
 		User.findById(req.user.doc._id, function(err, user){
 			if(err) console.log(err);
-			console.log(user.seen);
 			res.render('landingPage', {show: true, seen: user.seen});
 		});
 	}
@@ -171,7 +170,6 @@ function pathExtractor(req) {
   }
   // Replace utility function
   function replaceAll(str, find, replace) {
-	  console.log(find);
    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace); 
   }
 	if(req.get('referer') == null) {
@@ -265,12 +263,9 @@ app.post('/signup/detail', function(req,res){
 			user.save(function(err) {
 				if (err) return next(err)
 				// What's happening in passport's session? Check a specific field...
-				console.log("Before relogin: "+req.user)
 
 				req.login(user, function(err) {
 					if (err) return next(err)
-
-					console.log("After relogin: "+req.user)
 					res.send(200)
 				})
 			})
@@ -306,7 +301,6 @@ app.get('/signout', function(req,res){
 app.get('/books', function(req, res) {
 	if(req.query.search) {
 		var string = encodeURIComponent(req.query.search);
-		// console.log(req.query.search);
 		res.redirect("/books/page/1/?search=" + string)
 	}
 	else {
@@ -340,7 +334,6 @@ app.get('/books/page/:page',function(req, res){
 						res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
 				   }
 					// res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
-					// console.log(data);
 				}
 			});
 		});	
@@ -628,7 +621,6 @@ app.get('/signup/google/callback',
 		}
 	else{
 		// Adding Notification
-		console.log("Redirect: ", req.session.redirectTo)
 		res.redirect(req.session.redirectTo || '/');
     	delete req.session.redirectTo;
 	}
@@ -921,16 +913,11 @@ app.get('/:id/accepted', function(req, res) {
 		if(err)
 			console.log(err);
 		user.cart.forEach(function(book_id, index){
-			console.log("Book ID: ", book_id);
-			
 			if(book_id.itemModel == 'Book') {
 				// For itemModel = 'Book' book->id = book_id.item_id;
 				Book.findById(book_id.item_id, function(err, book) {
-					console.log("Book: ", book);
 					User.findById(req.user.doc._id, function(err, buyer){
-						console.log("Buyer: ", buyer);
 						User.find({'username': book.uploader}, function(err, seller){
-							console.log("Seller: ", seller);
 							// send notification to seller
 							var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
 							var seller_new_notif = new notif({
@@ -959,11 +946,8 @@ app.get('/:id/accepted', function(req, res) {
 			else {
 				// For itemModel = 'Misc' book->id = book_id.item_id;
 				Misc.findById(book_id.item_id, function(err, book) {
-					console.log("Misc: ", book);
 					User.findById(req.user.doc._id, function(err, buyer){
-						console.log("Buyer: ", buyer);
 						User.find({'username': book.uploader}, function(err, seller){
-							console.log("Seller: ", seller);
 							// send notification to seller
 							var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
 							var seller_new_notif = new notif({
@@ -1102,11 +1086,8 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 			"grant_type": "refresh_token",
 		})
 	});
-	console.log("Token Details 1: ", tokenDetails);
 	tokenDetails = await tokenDetails.json();
-	console.log("Token Details 2: ", tokenDetails);
 	const accessToken = tokenDetails.access_token;
-	console.log("Access Token: ", accessToken);
 	
 	const oauth2Client = new google.auth.OAuth2();
 	oauth2Client.setCredentials({'access_token': accessToken});
@@ -1688,7 +1669,7 @@ app.get('/misc/page/:page', function(req, res){
 						res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
 				   }
                     // res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
-                    // console.log(data);
+                   
                 }
             });
         });    
@@ -1713,7 +1694,6 @@ app.get('/misc/page/:page', function(req, res){
 					else {
 						res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
 				   }
-					// console.log('count', count);
                     // res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
                 }
             });
@@ -2041,6 +2021,6 @@ app.get('/notif/deleteall', function(req, res){
 // app.listen(8080,function(){
 // 	console.log("Server is listening...");
 // });
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen(process.env.PORT || 8080, process.env.IP, function(){
 	console.log("Server is listening...");
 });
