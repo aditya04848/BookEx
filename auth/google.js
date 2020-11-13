@@ -20,13 +20,13 @@ passport.use(new GoogleStrategy({
   },
   function(accessToken, refreshToken, profile, done) {
 	console.log(refreshToken);
-       User.findOrCreate({ username: profile._json.email }, { 
+       User.findOneAndUpdate({ username: profile._json.email }, { 
            accessToken: accessToken,
 		   refreshToken: refreshToken,
 		   username: profile._json.email,
 		   firstname: profile._json.given_name,
 		   lastname: profile._json.family_name,
-		   userid: profile.id}, function (err, user) {
+		   userid: profile.id}, { upsert: true, new: true, setDefaultsOnInsert: true },function (err, user) {
          return done(err, user);
        });
   }
