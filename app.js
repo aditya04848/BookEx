@@ -48,13 +48,13 @@ app.use(function(req, res, next){
 		res.locals.currentUser = req.user;
 		next();
 	}
-	else if(req.user.doc==null)
+	else if(req.user==null)
 	{
 		res.locals.currentUser = req.user;
 		next();
 	}
 	else{
-		res.locals.currentUser = req.user.doc;
+		res.locals.currentUser = req.user;
 		next();
 	}
 })
@@ -149,7 +149,7 @@ cloudinary.config({
 //Landing Route
 app.get('/', function(req, res){
 	if(req.isAuthenticated()) {
-		User.findById(req.user.doc._id, function(err, user){
+		User.findById(req.user._id, function(err, user){
 			if(err) console.log(err);
 			res.render('landingPage', {show: true, seen: user.seen});
 		});
@@ -190,7 +190,7 @@ app.get('/signup', function(req,res){
 });
 app.get('/about-us', function(req, res){
 	if(req.isAuthenticated()) {
-        User.findById(req.user.doc._id, function(err, user){
+        User.findById(req.user._id, function(err, user){
             if(err) console.log(err);
             res.render('aboutUs', {show: true, seen: user.seen});
         });
@@ -254,7 +254,7 @@ app.post('/verify', function(req, res){
 
 
 app.post('/signup/detail', function(req,res){
-	if(req.user.doc == null) {
+	if(req.user == null) {
 		User.findByIdAndUpdate(req.user._id, req.body.detail, function(err,user) {
 		if (err) {
 			console.log(err);
@@ -272,7 +272,7 @@ app.post('/signup/detail', function(req,res){
 		});
 	}
 	else {
-		User.findByIdAndUpdate(req.user.doc._id, req.body.detail, function(err,data) {
+		User.findByIdAndUpdate(req.user._id, req.body.detail, function(err,data) {
 		if (err) {
 			console.log(err);
 		}
@@ -325,7 +325,7 @@ app.get('/books/page/:page',function(req, res){
 				} else {
 					var string = encodeURIComponent(req.query.search);
 					if(req.isAuthenticated()) {
-						User.findById(req.user.doc._id, function(err, user){
+						User.findById(req.user._id, function(err, user){
 							if(err) console.log(err);
 							res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
 						});
@@ -350,7 +350,7 @@ app.get('/books/page/:page',function(req, res){
 				} else {
 					var string = "";
 					if(req.isAuthenticated()) {
-						User.findById(req.user.doc._id, function(err, user){
+						User.findById(req.user._id, function(err, user){
 							if(err) console.log(err);
 							res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
 						});
@@ -367,7 +367,7 @@ app.get('/books/page/:page',function(req, res){
 // New Book Route
 app.get('/books/new', function(req, res){
 	if(req.isAuthenticated()){
-		User.findById(req.user.doc._id, function(err, user){
+		User.findById(req.user._id, function(err, user){
             if(err) console.log(err);
             res.render('newbooks', {show: true, seen: user.seen});
         });
@@ -381,7 +381,7 @@ app.get('/books/new', function(req, res){
 // My Book Route
 app.get('/books/mybook', function(req, res){
 	if(req.isAuthenticated()) {
-        User.findById(req.user.doc._id, function(err, user){
+        User.findById(req.user._id, function(err, user){
             if(err) console.log(err);
             res.render('myBook', {show: true, seen: user.seen});
         });
@@ -394,7 +394,7 @@ app.get('/books/mybook', function(req, res){
 // cart Route
 // app.get('/books/cart', function(req, res){
 // 	if(req.isAuthenticated()) {
-//         User.findById(req.user.doc._id, function(err, user){
+//         User.findById(req.user._id, function(err, user){
 //             if(err) console.log(err);
 //             res.render('.......', {show: true, seen: user.seen});
 //         });
@@ -409,7 +409,7 @@ app.post('/books', upload.single('image'), function(req,res){
   // add cloudinary url for the image to the campground object under image property
 		req.body.newBook.image = result.secure_url;
 		req.body.newBook.imageId = result.public_id;
-		req.body.newBook.uploader = req.user.doc.username;
+		req.body.newBook.uploader = req.user.username;
 		Book.create(req.body.newBook, function(err, book){
 			if(err) {
 				console.log(err);
@@ -420,7 +420,7 @@ app.post('/books', upload.single('image'), function(req,res){
 					content: message
 				});
 				new_notif.save();
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					else {
 						user.notification.push(new_notif);
@@ -456,7 +456,7 @@ app.get('/books/:id', function(req, res){
               data.save();
             }
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('bookDetail', {book: data, show: true, seen: user.seen});
 				});
@@ -476,7 +476,7 @@ app.get('/books/:id/edit', function(req, res){
 			console.log(err);
 		} else {
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('editbook', {book: data, editing: 'books', show: true, seen: user.seen});
 				});
@@ -519,7 +519,7 @@ app.put("/books/:id", upload.single('image'), function(req, res){
 					content: message
 				});
 				new_notif.save();
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					else {
 						user.notification.push(new_notif);
@@ -615,7 +615,8 @@ app.get('/signup/google',
 app.get('/signup/google/callback',
   passportGoogle.authenticate('google', { failureRedirect: '/signup' }),
   function(req, res) {
-	if(req.user.doc.mobileno === undefined) 
+	console.log("Req user: \n",req.user);
+	if(req.user.mobileno === undefined) 
 		{
 			res.redirect('/signup/detail');
 		}
@@ -634,7 +635,7 @@ app.get('/signup/facebook/callback',
   passportFacebook.authenticate('facebook', { failureRedirect: '/signup' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    if(req.user.doc.city === undefined || req.user.doc.college === undefined || req.user.doc.mobileno === undefined) 
+    if(req.user.city === undefined || req.user.college === undefined || req.user.mobileno === undefined) 
 		{
 			res.redirect('/signup/detail');
 		}
@@ -651,7 +652,7 @@ app.get('/books/:id/buy', function(req, res){
 			console.log(err);
 		else{
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('buybook', {records: data, buying: 'books', show: true, seen: user.seen});
 				});
@@ -667,10 +668,10 @@ app.get('/books/:id/buy', function(req, res){
 // Mail Send Route
 app.get('/books/:id/accepted', function(req, res){
 	Book.findById(req.params.id, function(err, book) {
-		User.findById(req.user.doc._id, function(err, buyer){
+		User.findById(req.user._id, function(err, buyer){
 			User.find({'username': book.uploader}, function(err, seller){
 				// send notification to seller
-				var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+				var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.firstname+" "+req.user.lastname+" <br>Email ID: "+req.user.username+" <br>Phone Number: "+req.user.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
 				var seller_new_notif = new notif({
 					content: seller_message
 				});
@@ -717,7 +718,7 @@ app.get('/mybooks', function(req, res){
 							else {
 								var data = Booksdata.concat(Miscdata,Ebooksdata);
 								if(req.isAuthenticated()) {
-									User.findById(req.user.doc._id, function(err, user){
+									User.findById(req.user._id, function(err, user){
 										if(err) console.log(err);
 										res.render('myBooks', {records: data, show: true, seen: user.seen});
 									});
@@ -746,7 +747,7 @@ app.get('/books/:id/comment', function(req, res){
 			console.log(err);
 		else
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('commentPage', {record: data, commenting: 'books', show: true, seen: user.seen});
 				});
@@ -769,8 +770,8 @@ app.post('/books/:id/comments', function(req,res){
 			var new_rating = new Rating({
 				rating: parseInt(req.body.rating),
 				text: req.body.comment,
-				firstname : req.user.doc.firstname,
-				lastname :req.user.doc.lastname
+				firstname : req.user.firstname,
+				lastname :req.user.lastname
 			});
 			
 			new_rating.save();
@@ -788,7 +789,7 @@ app.post('/books/:id/comments', function(req,res){
 // Cart Route
 
 app.post('/books/:id/cart', function(req, res){
-		if(req.user.doc==null)
+		if(req.user==null)
 		{
 			User.findById(req.user._id, function(err, user){
 				if(err)
@@ -803,7 +804,7 @@ app.post('/books/:id/cart', function(req, res){
 			});
 		}
 		else{
-			User.findById(req.user.doc._id, function(err, user){
+			User.findById(req.user._id, function(err, user){
 				if(err)
 					console.log(err);
 				Book.findById(req.params.id, function(err, book){
@@ -825,7 +826,7 @@ app.get('/:id/cart', function(req, res){
 			console.log(err);
 		else{
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					var new_price = 0;
 					var removelist = [];
@@ -896,7 +897,7 @@ app.get('/:id1/cart/:id2', function(req, res){
 // Cart Buy Implementation
 app.get('/:id/buy', function(req, res) {
 	if(req.isAuthenticated()) {
-        User.findById(req.user.doc._id, function(err, user){
+        User.findById(req.user._id, function(err, user){
             if(err) console.log(err);
             res.render('buyCart', {show: true, seen: user.seen});
         });
@@ -916,10 +917,10 @@ app.get('/:id/accepted', function(req, res) {
 			if(book_id.itemModel == 'Book') {
 				// For itemModel = 'Book' book->id = book_id.item_id;
 				Book.findById(book_id.item_id, function(err, book) {
-					User.findById(req.user.doc._id, function(err, buyer){
+					User.findById(req.user._id, function(err, buyer){
 						User.find({'username': book.uploader}, function(err, seller){
 							// send notification to seller
-							var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+							var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.firstname+" "+req.user.lastname+" <br>Email ID: "+req.user.username+" <br>Phone Number: "+req.user.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
 							var seller_new_notif = new notif({
 								content: seller_message
 							});
@@ -946,10 +947,10 @@ app.get('/:id/accepted', function(req, res) {
 			else {
 				// For itemModel = 'Misc' book->id = book_id.item_id;
 				Misc.findById(book_id.item_id, function(err, book) {
-					User.findById(req.user.doc._id, function(err, buyer){
+					User.findById(req.user._id, function(err, buyer){
 						User.find({'username': book.uploader}, function(err, seller){
 							// send notification to seller
-							var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+							var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.firstname+" "+req.user.lastname+" <br>Email ID: "+req.user.username+" <br>Phone Number: "+req.user.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
 							var seller_new_notif = new notif({
 								content: seller_message
 							});
@@ -1035,7 +1036,7 @@ app.get('/ebooks/page/:page', function(req, res){
 				else {
 					var string = encodeURIComponent(req.query.search);
 					if(req.isAuthenticated()) {
-						User.findById(req.user.doc._id, function(err, user){
+						User.findById(req.user._id, function(err, user){
 							if(err) console.log(err);
 							res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
 						});
@@ -1059,7 +1060,7 @@ app.get('/ebooks/page/:page', function(req, res){
 				else {
 					var string = "";
 					if(req.isAuthenticated()) {
-						User.findById(req.user.doc._id, function(err, user){
+						User.findById(req.user._id, function(err, user){
 							if(err) console.log(err);
 							res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
 						});
@@ -1080,7 +1081,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 		"body": JSON.stringify({
 			"client_id": "921117793019-6r4on28a2c1j8a6tf95ogmp82cpqi7jj.apps.googleusercontent.com",
 			"client_secret": "M3uhkGt4D8RcBQNPUQ0vIROf",
-			"refresh_token": req.user.doc.refreshToken,
+			"refresh_token": req.user.refreshToken,
 			"grant_type": "refresh_token",
 		})
 	});
@@ -1089,7 +1090,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 	// 	"body": JSON.stringify({
 	// 		"client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
 	// 		"client_secret": "bcNyHqPiFtsXUpTDUwme213T",
-	// 		"refresh_token": req.user.doc.refreshToken,
+	// 		"refresh_token": req.user.refreshToken,
 	// 		"grant_type": "refresh_token",
 	// 	})
 	// });
@@ -1110,7 +1111,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
     bufferStream.end(fileObject.buffer);
 
 	let folderId;
-	User.findById(req.user.doc._id, function(err, user){
+	User.findById(req.user._id, function(err, user){
 		folderId = user.folder_id;
 		if(user.folder_id == null) {
 		var folderMetadata = {
@@ -1128,7 +1129,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 					console.log(err);
 				else 
 				{
-					User.findById(req.user.doc._id, function(err, user) {
+					User.findById(req.user._id, function(err, user) {
 						user.folder_id = folder.data.id;
 						user.save();
 					});
@@ -1186,7 +1187,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 								console.error(err);
 							  } else {
 								  req.body.newBook.file_id = fileId;
-					  			  req.body.newBook.uploader = req.user.doc.username;
+					  			  req.body.newBook.uploader = req.user.username;
 								  Ebook.create(req.body.newBook, function(err, ebook){
 									  if(err) console.log(err);
 									  else {
@@ -1195,7 +1196,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 											content: message
 										});
 										new_notif.save();
-										User.findById(req.user.doc._id, function(err, user){
+										User.findById(req.user._id, function(err, user){
 											if(err) console.log(err);
 											else {
 												user.notification.push(new_notif);
@@ -1257,7 +1258,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 				  } else {
 					// All permissions inserted
 								  req.body.newBook.file_id = fileId;
-					  			  req.body.newBook.uploader = req.user.doc.username;
+					  			  req.body.newBook.uploader = req.user.username;
 								  Ebook.create(req.body.newBook, function(err, ebook){
 									  if(err) console.log(err);
 									  else {
@@ -1266,7 +1267,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 											content: message
 										});
 										new_notif.save();
-										User.findById(req.user.doc._id, function(err, user){
+										User.findById(req.user._id, function(err, user){
 											if(err) console.log(err);
 											else {
 												user.notification.push(new_notif);
@@ -1307,7 +1308,7 @@ app.get('/ebooks/:id', function(req, res){
               data.save();
             }
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('ebookDetail', {book: data, show: true, seen: user.seen});
 				});
@@ -1336,7 +1337,7 @@ app.delete('/ebooks/:id', async function(req, res){
 			// "client_secret": "bcNyHqPiFtsXUpTDUwme213T",
 			"client_id": "921117793019-6r4on28a2c1j8a6tf95ogmp82cpqi7jj.apps.googleusercontent.com",
 			"client_secret": "M3uhkGt4D8RcBQNPUQ0vIROf",
-            "refresh_token": req.user.doc.refreshToken,
+            "refresh_token": req.user.refreshToken,
             "grant_type": "refresh_token",
         })
     });
@@ -1375,7 +1376,7 @@ app.get('/ebooks/:id/edit', function(req, res){
 		if(err) console.log(err);
 		else {
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('editbook', {book: data, editing: 'ebooks', show: true, seen: user.seen});
 				});
@@ -1396,7 +1397,7 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
 			// "client_secret": "bcNyHqPiFtsXUpTDUwme213T",
 			"client_id": "921117793019-6r4on28a2c1j8a6tf95ogmp82cpqi7jj.apps.googleusercontent.com",
 			"client_secret": "M3uhkGt4D8RcBQNPUQ0vIROf",
-            "refresh_token": req.user.doc.refreshToken,
+            "refresh_token": req.user.refreshToken,
             "grant_type": "refresh_token",
         })
     });
@@ -1421,7 +1422,7 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
 	});
 
     let folderId;
-    User.findById(req.user.doc._id, function(err, user){
+    User.findById(req.user._id, function(err, user){
         folderId = user.folder_id;
         if(user.folder_id == null) {
         var folderMetadata = {
@@ -1439,7 +1440,7 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
                     console.log(err);
                 else
                 {
-                    User.findById(req.user.doc._id, function(err, user) {
+                    User.findById(req.user._id, function(err, user) {
                         user.folder_id = folder.data.id;
                         user.save();
                     });
@@ -1497,7 +1498,7 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
                                 console.error(err);
                               } else {
                                   req.body.newBook.file_id = fileId;
-                                    req.body.newBook.uploader = req.user.doc.username;
+                                    req.body.newBook.uploader = req.user.username;
                                   Ebook.create(req.body.newBook, function(err, ebook){
                                       if(err) console.log(err);
                                       else {
@@ -1506,7 +1507,7 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
 											content: message
 										});
 										new_notif.save();
-										User.findById(req.user.doc._id, function(err, user){
+										User.findById(req.user._id, function(err, user){
 											if(err) console.log(err);
 											else {
 												user.notification.push(new_notif);
@@ -1568,7 +1569,7 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
                   } else {
                     // All permissions inserted
                                   req.body.newBook.file_id = fileId;
-                                    req.body.newBook.uploader = req.user.doc.username;
+                                    req.body.newBook.uploader = req.user.username;
                                   Ebook.create(req.body.newBook, function(err, ebook){
                                       if(err) console.log(err);
                                       else {
@@ -1578,7 +1579,7 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
 											content: message
 										});
 										new_notif.save();
-										User.findById(req.user.doc._id, function(err, user){
+										User.findById(req.user._id, function(err, user){
 											if(err) console.log(err);
 											else {
 												user.notification.push(new_notif);
@@ -1604,7 +1605,7 @@ app.get('/ebooks/:id/comment', function(req, res){
 		if(err) console.log(err);
 		else {
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('commentPage', {record: data, commenting: 'ebooks', show: true, seen: user.seen});
 				});
@@ -1626,8 +1627,8 @@ app.post('/ebooks/:id/comments', function(req, res){
 			var new_rating = new Rating({
                 rating: parseInt(req.body.rating),
                 text: req.body.comment,
-                firstname : req.user.doc.firstname,
-                lastname :req.user.doc.lastname
+                firstname : req.user.firstname,
+                lastname :req.user.lastname
             });
             
             new_rating.save();
@@ -1667,7 +1668,7 @@ app.get('/misc/page/:page', function(req, res){
                 } else {
                     var string = encodeURIComponent(req.query.search);
 					if(req.isAuthenticated()) {
-						User.findById(req.user.doc._id, function(err, user){
+						User.findById(req.user._id, function(err, user){
 							if(err) console.log(err);
 							res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
 						});
@@ -1693,7 +1694,7 @@ app.get('/misc/page/:page', function(req, res){
                 } else {
                     var string = "";					
 					if(req.isAuthenticated()) {
-						User.findById(req.user.doc._id, function(err, user){
+						User.findById(req.user._id, function(err, user){
 							if(err) console.log(err);
 							res.render('miscPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
 						});
@@ -1713,7 +1714,7 @@ app.post('/misc', upload.single('image'), function(req, res){
 		// add cloudinary url for the image 
 		req.body.newBook.image = result.secure_url;
 		req.body.newBook.imageId = result.public_id;
-		req.body.newBook.uploader = req.user.doc.username;
+		req.body.newBook.uploader = req.user.username;
 		Misc.create(req.body.newBook, function(err, obj){
 			if(err) console.log(err);
 			else {
@@ -1722,7 +1723,7 @@ app.post('/misc', upload.single('image'), function(req, res){
 					content: message
 				});
 				new_notif.save();
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					else {
 						user.notification.push(new_notif);
@@ -1756,7 +1757,7 @@ app.get('/misc/:id', function(req, res){
 				data.save();
 			}
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('miscDetail', {book: data, show: true, seen: user.seen});
 				});
@@ -1775,7 +1776,7 @@ app.get('/misc/:id/buy', function(req, res){
 		if(err) console.log(err);
 		else {
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('buybook', {records: data, buying: 'misc', show: true, seen: user.seen});
 				});
@@ -1791,10 +1792,10 @@ app.get('/misc/:id/buy', function(req, res){
 app.get('/misc/:id/accepted', function(req, res){
 	Misc.findById(req.params.id, function(err, book){
 		// Notification required
-		User.findById(req.user.doc._id, function(err, buyer){
+		User.findById(req.user._id, function(err, buyer){
             User.find({'username': book.uploader}, function(err, seller){
                 // send notification to seller
-                var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.doc.firstname+" "+req.user.doc.lastname+" <br>Email ID: "+req.user.doc.username+" <br>Phone Number: "+req.user.doc.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
+                var seller_message = "Hello there! Hope you are having a good day. Your product <strong>"+book.title+"</strong> just got a new customer. Its now your time to deal with the customer. <strong>Best of Luck!</strong> The user deatils are provided below: <br>Name: "+req.user.firstname+" "+req.user.lastname+" <br>Email ID: "+req.user.username+" <br>Phone Number: "+req.user.mobileno+" <h3>Please delete your book from the site once you have sold it.</h3>";
                 var seller_new_notif = new notif({
                     content: seller_message
                 });
@@ -1821,7 +1822,7 @@ app.get('/misc/:id/accepted', function(req, res){
 
 // Add misc to cart
 app.post('/misc/:id/cart', function(req, res){
-		if(req.user.doc==null)
+		if(req.user==null)
 		{
 			User.findById(req.user._id, function(err, user){
 				if(err)
@@ -1836,7 +1837,7 @@ app.post('/misc/:id/cart', function(req, res){
 			});
 		}
 		else{
-			User.findById(req.user.doc._id, function(err, user){
+			User.findById(req.user._id, function(err, user){
 				if(err)
 					console.log(err);
 				Misc.findById(req.params.id, function(err, book){
@@ -1858,7 +1859,7 @@ app.get('/misc/:id/edit', function(req, res){
 		if(err) console.log(err);
 		else {
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('editbook', {book: data, editing: 'misc', show: true, seen: user.seen});
 				});
@@ -1901,7 +1902,7 @@ app.put('/misc/:id', upload.single('image'), function(req, res){
                     content: message
                 });
                 new_notif.save();
-                User.findById(req.user.doc._id, function(err, user){
+                User.findById(req.user._id, function(err, user){
                     if(err) console.log(err);
                     else {
                         user.notification.push(new_notif);
@@ -1944,7 +1945,7 @@ app.get('/misc/:id/comment', function(req, res){
 		if(err) console.log(err);
 		else {
 			if(req.isAuthenticated()) {
-				User.findById(req.user.doc._id, function(err, user){
+				User.findById(req.user._id, function(err, user){
 					if(err) console.log(err);
 					res.render('commentPage', {record: data, commenting: 'misc', show: true, seen: user.seen});
 				});
@@ -1966,8 +1967,8 @@ app.post('/misc/:id/comments', function(req, res){
 			var new_rating = new Rating({
                 rating: parseInt(req.body.rating),
                 text: req.body.comment,
-                firstname : req.user.doc.firstname,
-                lastname :req.user.doc.lastname
+                firstname : req.user.firstname,
+                lastname :req.user.lastname
             });
             
             new_rating.save();
@@ -1983,7 +1984,7 @@ app.get('/notif', function(req, res){
 	if(!req.isAuthenticated()) {
 		res.redirect('/signin');
 	}
-	User.findById(req.user.doc._id).populate('notification').exec(function(err, user){
+	User.findById(req.user._id).populate('notification').exec(function(err, user){
 		if(err) console.log(err);
 		else {
 			user.seen = true;
@@ -1994,7 +1995,7 @@ app.get('/notif', function(req, res){
 });
 
 app.get('/notif/:id/delete', function(req, res){
-	var UserData = User.findById(req.user.doc._id);
+	var UserData = User.findById(req.user._id);
 	UserData.populate('notification').exec(function(err, data){
 		if(err) console.log(err);
 		else {
@@ -2012,7 +2013,7 @@ app.get('/notif/:id/delete', function(req, res){
 });
 
 app.get('/notif/deleteall', function(req, res){
-	User.findById(req.user.doc._id, function(err, data){
+	User.findById(req.user._id, function(err, data){
 		if(err) console.log(err);
 		else {
 			data.notification.splice(0, data.notification.length);

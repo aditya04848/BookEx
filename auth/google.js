@@ -18,9 +18,9 @@ passport.use(new GoogleStrategy({
 	clientID:"921117793019-6r4on28a2c1j8a6tf95ogmp82cpqi7jj.apps.googleusercontent.com",
 	clientSecret: "M3uhkGt4D8RcBQNPUQ0vIROf"
   },
-  function(accessToken, refreshToken, profile, done) {
+  async function(accessToken, refreshToken, profile, done) {
 	console.log(refreshToken);
-       User.findOneAndUpdate({ username: profile._json.email }, { 
+       await User.findOneAndUpdate({ username: profile._json.email }, { 
            accessToken: accessToken,
 		   refreshToken: refreshToken,
 		   username: profile._json.email,
