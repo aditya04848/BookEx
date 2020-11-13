@@ -63,7 +63,7 @@
     border: 1.5px solid rgba(0, 0, 0, 0.25);
 ">
 	  <div class="card-img-top img-fluid books-img" style="width:100%;height: 250px;overflow: hidden;display:flex;padding: 7px; display: flex;">
-		  <% if(row.price != "") { %>
+		  <% if(row.price != "" || row.price === 0) { %>
 		<img class="card-img-top img-fluid" src="<%= row.image.replace((row.image).split('/')[(row.image).split('/').length - 2], 'w_300,f_auto') %>" alt="Card image cap" style="object-fit: contain;">
 		  <% } else { %>
 		  <img class="card-img-top img-fluid" src="https://lh3.googleusercontent.com/d/<%= row.file_id %>=s450?authuser=0" alt="Card image cap" style="width: 95%; height: auto;flex-grow: 1;
@@ -88,9 +88,12 @@
 		<p style="text-align:center"><bold>Author: <%= row.author %></bold></p>
 		<% } %>
 
-		<% if(row.price != "") { %>
+		<% if(row.price != "" || row.price === 0) { %>
+		<% if(row.price == 0) { %>
+		<p style="font-size: 18px;font-weight: bold;text-align: center; color: #39C600">Free</p>
+		<% } else { %>
 		<p style="font-size: 18px;font-weight: bold;text-align: center; color: #39C600"><i class="fa fa-inr"></i> <%= row.price %></p>
-		<% } %>
+		<% }} %>
 
 		<% if(row.description.length > 92) { %>
 			<p class="card-text" style="margin-bottom: 0.5rem;text-align: center;"><%= row.description.substring(0, 70)%> ....</p>

@@ -100,8 +100,12 @@
 		<% } else { %>
 			<h4 class="card-title" style="text-align: center;"><%= row.title%></h4>
 		<% } %>
-
+		
+		<% if(row.price == 0) { %>
+		<p style="font-size: 18px;font-weight: bold;text-align: center; color: #39C600">Free</p>
+		<% } else { %>
 		<p style="font-size: 18px;font-weight: bold;text-align: center; color: #39C600"><i class="fa fa-inr"></i> <%= row.price %></p>
+		<% } %>
 
 		<% if(row.description.length > 92) { %>
             <p class="card-text" style="margin-bottom: 0.5rem;text-align: center;"><%= row.description.substring(0, 70)%> ....</p>
