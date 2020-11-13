@@ -1080,12 +1080,19 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 		"body": JSON.stringify({
 			"client_id": "921117793019-6r4on28a2c1j8a6tf95ogmp82cpqi7jj.apps.googleusercontent.com",
 			"client_secret": "M3uhkGt4D8RcBQNPUQ0vIROf",
-			// "client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
-			// "client_secret": "bcNyHqPiFtsXUpTDUwme213T",
 			"refresh_token": req.user.doc.refreshToken,
 			"grant_type": "refresh_token",
 		})
 	});
+	// let tokenDetails = await fetch("https://accounts.google.com/o/oauth2/token", {
+	// 	"method": "POST",
+	// 	"body": JSON.stringify({
+	// 		"client_id": "1040941249609-oscm85g83ueshgs930pvncpsdmdcif6e.apps.googleusercontent.com",
+	// 		"client_secret": "bcNyHqPiFtsXUpTDUwme213T",
+	// 		"refresh_token": req.user.doc.refreshToken,
+	// 		"grant_type": "refresh_token",
+	// 	})
+	// });
 	tokenDetails = await tokenDetails.json();
 	const accessToken = tokenDetails.access_token;
 	
