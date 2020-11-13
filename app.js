@@ -1076,7 +1076,7 @@ app.get('/ebooks/page/:page', function(req, res){
 
 app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 	
-	let tokenDetails = await fetch("https://accounts.google.com/v2/oauth2/token", {
+	let tokenDetails = await fetch("https://accounts.google.com/o/oauth2/token", {
 		"method": "POST",
 		"body": JSON.stringify({
 			"client_id": "921117793019-6r4on28a2c1j8a6tf95ogmp82cpqi7jj.apps.googleusercontent.com",
