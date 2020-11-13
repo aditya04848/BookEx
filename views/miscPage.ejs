@@ -40,7 +40,7 @@
 				</li>
 				<% } else { %>
 				<li class="nav-item">
-                    <% if(show) { console.log(seen); if(seen) { %>
+                    <% if(show) { if(seen) { %>
                     <a href="/notif"><i class="far fa-bell btn-lg"></i></a>
                     <% } else { %>
                     <a href="/notif"><i class="fas fa-bell btn-lg" style=" background-color: blue; color: white; "></i></a>
@@ -73,7 +73,7 @@
 			<img src="/images/nothing.png" style="width: 60%;">
 		</p>
 		<p style="text-align: center;color: #6c63ff;font-size: 3rem;font-family: cursive;">
-			Nothing here.
+			Nothing Found.
 		</p>
 	</div>
 	<% } else { %>

@@ -29,7 +29,7 @@
 				</li>
 				<% } else { %>
 				<li class="nav-item">
-                    <% if(show) { console.log(seen); if(seen) { %>
+                    <% if(show) { if(seen) { %>
                     <a href="/notif"><i class="far fa-bell btn-lg"></i></a>
                     <% } else { %>
                     <a href="/notif"><i class="fas fa-bell btn-lg" style=" background-color: blue; color: white; "></i></a>
@@ -57,16 +57,17 @@
 <!-- End of Navbar -->
 	
 	<div class="card-deck" style="margin: 75px 10px;">
-	<% var count = 0; console.log(records); records.forEach(function(row){ if(row.uploader == currentUser.username) {  count++;%>
+	<% var count = 0; records.forEach(function(row){ if(row.uploader == currentUser.username) {  count++;%>
 	<div class="col-lg-3 col-md-6" style="margin-bottom: 75px;">
   <div class="card books" style="
     border: 1.5px solid rgba(0, 0, 0, 0.25);
 ">
-	  <div class="card-img-top img-fluid books-img" style="width:100%;height: 250px;overflow: hidden;display:flex;padding: 7px;">
+	  <div class="card-img-top img-fluid books-img" style="width:100%;height: 250px;overflow: hidden;display:flex;padding: 7px; display: flex;">
 		  <% if(row.price != "") { %>
 		<img class="card-img-top img-fluid" src="<%= row.image.replace((row.image).split('/')[(row.image).split('/').length - 2], 'w_300,f_auto') %>" alt="Card image cap" style="object-fit: contain;">
 		  <% } else { %>
-		  <img class="card-img-top img-fluid" src="https://drive.google.com/thumbnail?id=<%= row.file_id %>" alt="Card image cap" style="object-fit: contain;">
+		  <img class="card-img-top img-fluid" src="https://lh3.googleusercontent.com/d/<%= row.file_id %>=s450?authuser=0" alt="Card image cap" style="width: 95%; height: auto;flex-grow: 1;
+  object-fit: cover; object-position: top;">
 		  <% } %>
 	  </div>
 	<hr style="

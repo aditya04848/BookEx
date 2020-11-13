@@ -31,7 +31,7 @@
 				</li> 
 				<% } else { %>
 				<li class="nav-item">
-                    <% if(show) { console.log(seen); if(seen) { %>
+                    <% if(show) { if(seen) { %>
                     <a href="/notif"><i class="far fa-bell btn-lg"></i></a>
                     <% } else { %>
                     <a href="/notif"><i class="fas fa-bell btn-lg" style=" background-color: blue; color: white; "></i></a>
@@ -69,14 +69,14 @@
 		<hr style="border: 1px solid black">
 		
 <!-- 	Books	 -->
-		<% console.log(books); if(books.cart.length == 0) { %>
+		<% if(books.cart.length == 0) { %>
 		<p style="text-align: center;">
 			<img src="/images/cart.png" style="width: 60%;">
 		</p>
 		<p style="text-align: center;color: #6c63ff;font-size: 3rem;font-family: cursive;">
 			Cart Empty.
 		</p>
-		<% } else { for(const book of books.cart) { console.log(book); %>
+		<% } else { for(const book of books.cart) { %>
 		<div style="width: 100%; height: auto;">
 			<div style="padding: 10px; height: 100%; width: 20%; display: inline-block; text-align:center;">
 				<img src="<%= book.item_id.image.replace((book.item_id.image).split('/')[(book.item_id.image).split('/').length - 2], 'w_500,f_auto') %>" alt="..." class="img-thumbnail" style="object-fit: contain; height: auto; margin: 10px;">
