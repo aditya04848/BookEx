@@ -29,6 +29,7 @@ var express                     = require("express"),
 	Ebook						= require('./models/eBook'),
 	Misc						= require('./models/Misc'),
 	notif						= require('./models/notif'),
+	Feed						= require('./models/feedback'),
 	async 						= require('async');
 mongoose.connect("mongodb+srv://BookEx:7230429adi@cluster0.fcnj1.mongodb.net/ualu_app?retryWrites=true&w=majority",{useUnifiedTopology:true, useNewUrlParser:true});
 app.use(express.static("assets"));
@@ -514,7 +515,7 @@ app.put("/books/:id", upload.single('image'), function(req, res){
 				console.log(err);
 			} else 
 			{
-				var message = "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+book.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+book.title+"</h1><h6 style='text-align:center;'>By: "+book.author+"</h6><hr><p>"+book.description+"</p></div></div>";
+				var message= "Hello there, hope you are having a good day. Thank you so much for lending your product. The details provided by you for the product is under verification and will be uploaded on the website once verified. Also, a mail will be sent to you notifying the verification.<br>Below are the details uploaded by you.<br><div class='container' style='border: 1px solid black ; margin:10% auto; border-radius:10px'><div class='row' style='margin:75px 50px 40px;'><div class='col-lg-6' style='text-align:center; margin-bottom: 50px;'><img src='"+book.image+"' alt='...' class='img-thumbnail' style='height: 300px;'></div><div class='col-lg-6'>        <h1 style='text-align:center;'>"+book.title+"</h1><h6 style='text-align:center;'>By: "+book.author+"</h6><hr><p>"+book.description+"</p></div></div>";
 				var new_notif = new notif({
 					content: message
 				});
@@ -2022,6 +2023,14 @@ app.get('/notif/deleteall', function(req, res){
 		}
 	})
 })
+
+// Feedback Routes
+app.post('/feed', function(req, res){
+	Feed.create(req.body.feed, function(err, new_feed){
+		if(err) console.log(err);
+		else res.redirect('/about-us');
+	})
+});
 
 //====== END OF ROUTES =====
 //start server
