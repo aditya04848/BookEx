@@ -1114,10 +1114,18 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 	let folderId;
 	User.findById(req.user._id, function(err, user){
 		folderId = user.folder_id;
+		var fs = require("fs");
+		fs.access("https://drive.google.com/drive/u/4/folders/"+folderId, (err) => {
+		  if (err) {
+			user.folder_id = null;
+			user.save();
+		  }
+		});
+		
 		if(user.folder_id == null) {
-		var folderMetadata = {
-			'name': 'Kitab Buddy',
-  			'mimeType': 'application/vnd.google-apps.folder'
+			var folderMetadata = {
+				'name': 'BookEx',
+				'mimeType': 'application/vnd.google-apps.folder'
 		};
 		drive.files.create(
 			{
@@ -1427,7 +1435,7 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
         folderId = user.folder_id;
         if(user.folder_id == null) {
         var folderMetadata = {
-            'name': 'Kitab Buddy',
+            'name': 'BookEx',
               'mimeType': 'application/vnd.google-apps.folder'
         };
         drive.files.create(
