@@ -100,22 +100,22 @@
 		<br>
 		<hr>
 		<% if(currentUser!=null) { if(currentUser.username != book.uploader) {%>
-		    <div style="float:left">
+		    <div class = "login-btn-left">
 				<a href='/misc/<%= book._id %>/comment' class="btn btn-outline-warning">Rate this book</a>
 		    </div>
-			<div style="float:right;">
+			<div class = "login-btn-right">
 				<a href='/misc/<%= book._id %>/buy' class="btn btn-outline-success">Buy Now!</a>
 			</div>
-			<div style="margin: 0 10px;float:right;">
+			<div class = "login-btn-right">
 				<form action="/misc/<%= book._id %>/cart" method="POST">
 					<button type='submit' class="btn btn-outline-info">Add to Cart</button>					
 				</form>
 			</div>
 		<% }} else { %>
-			<div style="float:left">
+			<div  class = "login-btn-left">
 				<a href='/signin' class="btn btn-outline-warning">Login to Rate this item</a>
 		    </div>
-			<div style="float:right;">
+			<div  class = "login-btn-right">
 				<a href='/signin' class="btn btn-outline-success">Login to Purchase</a>
 			</div>
 		<% } %>
@@ -140,7 +140,7 @@
 				<% book.ratings.forEach(function(rating){ %>
 				<hr>
 					<h6 style="display: inline-block; "><%= rating.firstname %> <%= rating.lastname %></h6>
-					<p style="display: inline-block; float: right; padding: 0 45px; font-size:13px">Rating: <%= rating.rating %></p>
+					<p class = "rating-comment" style="font-size:13px">Rating: <%= rating.rating %></p>
 					<p style="padding: 0 45px; font-size:13px;">
 						<%= rating.text %>
 					</p>

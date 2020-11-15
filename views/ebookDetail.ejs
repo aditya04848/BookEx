@@ -75,7 +75,7 @@
 			<iframe src="https://drive.google.com/file/d/<%= book.file_id %>/preview" width height style="width: inherit; height: 650px;"></iframe>
 		</div>
 		<% } else { %>
-		<div class="col-lg-6" style="text-align:center; margin-bottom: 50px; pointer-events: none;">
+		<div class="col-lg-6" style="text-align:center; margin-bottom: 50px; pointer-events: none; touch-action: none;">
 			<iframe src="https://drive.google.com/file/d/<%= book.file_id %>/preview" width height style="width: inherit; height: 650px;"></iframe>
 			<p>
 				<i class="fa fa-exclamation-triangle" style="color:red;"></i> Please Login to be able to view this file completely.
@@ -105,20 +105,20 @@
 			<br>
 			<hr>
 			<% if(currentUser!=null) { if(currentUser.username != book.uploader) {%>
-				<div style="float:left">
+				<div class = "login-btn-left">
 					<a href='/ebooks/<%= book._id %>/comment' class="btn btn-outline-warning">Rate this book</a>
 				</div>
-				<div style="margin: 0 10px;float:right;">
+				<div class = "login-btn-right">
 					<a href='http://drive.google.com/uc?id=<%= book.file_id %>&export=download' class="btn btn-outline-info" target="_blank">Download Now!</a>
 				</div>
-				<div style="float:right;">
+				<div class = "login-btn-right">
 					<a href='https://drive.google.com/file/d/<%= book.file_id %>' class="btn btn-outline-success" target="_blank">Open in new tab</a>
 				</div>
 			<% }} else { %>
-				<div style="float:left">
+				<div class = "login-btn-left">
 					<a href='/signin' class="btn btn-outline-warning">Login to Rate this book</a>
 				</div>
-				<div style="float:right;">
+				<div class = "login-btn-right">
 					<a href='/signin' class="btn btn-outline-success">Login to Download</a>
 				</div>
 			<% } %>
@@ -143,7 +143,7 @@
 					<% book.ratings.forEach(function(rating){ %>
 					<hr>
 						<h6 style="display: inline-block; "><%= rating.firstname %> <%= rating.lastname %></h6>
-						<p style="display: inline-block; float: right; padding: 0 45px; font-size:13px">Rating: <%= rating.rating %></p>
+						<p class = "rating-comment" style="font-size:13px">Rating: <%= rating.rating %></p>
 						<p style="padding: 0 45px; font-size:13px;">
 							<%= rating.text %>
 						</p>
