@@ -28,7 +28,7 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" id="basic-addon1"><i class="fa fa-search"></i></span>
 							</div>
-							<input type="text" name="search" class="form-control" placeholder="Search Miscellaneous...">
+							<input type="text" name="search" class="form-control" placeholder="Search Miscellaneous..." <%if(query === "undefined" || query == null) {} else {%>value="<%=query%>"<%}%>>
 						</div>
 						<button class="btn btn-info my-2 my-sm-0" style="margin: 0 10px;">Search</button>
 					</form>

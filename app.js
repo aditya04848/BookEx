@@ -300,20 +300,59 @@ app.get('/signout', function(req,res){
 //Main book page Route
 
 app.get('/books', function(req, res) {
+	var url = "/books/page/1";
+	var found = false;
 	if(req.query.search) {
 		var string = encodeURIComponent(req.query.search);
-		res.redirect("/books/page/1/?search=" + string)
+		url = url+"/?search="+string;
+		found = true;
 	}
-	else {
-		res.redirect("/books/page/1");
+	if(req.query.branch) {
+		var string = encodeURIComponent(req.query.branch);	
+		if(string === "all") string = "";
+		if(found){
+			url = url+"&branch="+string;
+		}
+		else{
+			url = url+"/?branch="+string;
+		}
+		found = true;
 	}
+	res.redirect(url);
 });
 
 app.get('/books/page/:page',function(req, res){ 
 	var perPage = 16
     var page = req.params.page || 1
-	if(req.query.search){
+	if(req.query.search && req.query.branch){
 		//Search query using escapeRegex
+		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+		var book_data = Book.find({title: regex, branch: req.query.branch});
+		var booksData = Book.find({title : regex, branch: req.query.branch})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+		booksData.exec(function(err, data){
+			book_data.count().exec(function(err, count) {
+				if(err) {
+					console.log(err);
+				} else {
+					var string = encodeURIComponent(req.query.search);
+					var string2 = encodeURIComponent(req.query.branch);	
+					if(req.isAuthenticated()) {
+						User.findById(req.user._id, function(err, user){
+							if(err) console.log(err);
+							res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch: string2,show: true, seen: user.seen});
+						});
+					}
+					else {
+						res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch: string2, show: false});
+				   }
+					// res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+				}
+			});
+		});	
+	}
+	else if(req.query.search) {
 		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
 		var book_data = Book.find({title: regex});
 		var booksData = Book.find({title : regex})
@@ -332,7 +371,33 @@ app.get('/books/page/:page',function(req, res){
 						});
 					}
 					else {
-						res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
+						res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch: "all", show: false});
+				   }
+					// res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+				}
+			});
+		});	
+	}
+	else if(req.query.branch){
+		var book_data = Book.find({branch: req.query.branch});
+		var booksData = Book.find({branch: req.query.branch})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+		booksData.exec(function(err, data){
+			book_data.count().exec(function(err, count) {
+				if(err) {
+					console.log(err);
+				} else {
+					var string = encodeURIComponent(req.query.search);
+					var string2 = encodeURIComponent(req.query.branch);	
+					if(req.isAuthenticated()) {
+						User.findById(req.user._id, function(err, user){
+							if(err) console.log(err);
+							res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, branch: string2, seen: user.seen});
+						});
+					}
+					else {
+						res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch: string2, show: false});
 				   }
 					// res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
 				}
@@ -357,7 +422,7 @@ app.get('/books/page/:page',function(req, res){
 						});
 					}
 					else {
-						res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
+						res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:"all", show: false});
 				   }
 					// res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
 				}
@@ -406,6 +471,7 @@ app.get('/books/mybook', function(req, res){
 // 	// res.render('cart');
 // });
 app.post('/books', upload.single('image'), function(req,res){
+	console.log("Req.body: ", req.body);
 	cloudinary.uploader.upload(req.file.path, function(result) {
   // add cloudinary url for the image to the campground object under image property
 		req.body.newBook.image = result.secure_url;
@@ -1012,67 +1078,245 @@ app.get('/:id/accepted', function(req, res) {
 
 // Ebooks Route
 app.get('/ebooks', function(req, res){
-	if(req.query.search){
+	var url = "/ebooks/page/1";
+	var found = false;
+	if(req.query.search) {
 		var string = encodeURIComponent(req.query.search);
-		res.redirect('/ebooks/page/1/?search='+string);
+		url = url+"/?search="+string;
+		found = true;
 	}
-	else {
-		res.redirect('/ebooks/page/1');
+	if(req.query.branch) {
+		var string = encodeURIComponent(req.query.branch);	
+		if(string === "all") string = "";
+		if(found){
+			url = url+"&branch="+string;
+		}
+		else{
+			url = url+"/?branch="+string;
+		}
+		found = true;
 	}
+	if(req.query.tag) {
+		var string = encodeURIComponent(req.query.tag);	
+		if(string === "oth") string = "";
+		if(found){
+			url = url+"&tag="+string;
+		}
+		else{
+			url = url+"/?tag="+string;
+		}
+		found = true;
+	}
+	res.redirect(url);
 });
 
 app.get('/ebooks/page/:page', function(req, res){
-	var perPage = 16;
-	var page = req.params.page || 1;
-	if(req.query.search){
-		// Search query using escape search
-		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-		var ebook_data = Ebook.find({title: regex});
-		var ebookData = Ebook.find({title: regex})
-		.skip((perPage * page) - perPage)
-		.limit(perPage);
-		ebookData.exec(function(err, data){
-			ebook_data.count().exec(function(err, count){
-				if(err) console.log(err);
-				else {
-					var string = encodeURIComponent(req.query.search);
-					if(req.isAuthenticated()) {
-						User.findById(req.user._id, function(err, user){
-							if(err) console.log(err);
-							res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
-						});
-					}
-					else {
-						res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
-				   }
-					// res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
-				}
-			})
-		})
-	}
-	else {
-		// Show all data from the database
-		var ebookData = Ebook.find({})
-		.skip((perPage * page) - perPage)
-		.limit(perPage);
-		ebookData.exec(function(err, data){
-			Ebook.count().exec(function(err, count){
-				if(err) console.log(err);
-				else {
-					var string = "";
-					if(req.isAuthenticated()) {
-						User.findById(req.user._id, function(err, user){
-							if(err) console.log(err);
-							res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
-						});
-					}
-					else {
-						res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: false});
-				   }
-				}
-			})
-		})
-	}
+    var perPage = 16;
+    var page = req.params.page || 1;
+    if(req.query.search && req.query.tag && req.query.branch){
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        var ebook_data = Ebook.find({title: regex, branch: req.query.branch, tag: req.query.tag});
+        var ebookData = Ebook.find({title: regex, branch: req.query.branch, tag: req.query.tag})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+        ebookData.exec(function(err, data){
+            ebook_data.count().exec(function(err, count){
+                if(err) console.log(err);
+                else {
+                    var string = encodeURIComponent(req.query.search);
+                    var string2 = encodeURIComponent(req.query.branch);
+                    var string3 = encodeURIComponent(req.query.tag);
+                    if(req.isAuthenticated()) {
+                        User.findById(req.user._id, function(err, user){
+                            if(err) console.log(err);
+                            res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:string2, tag:string3, show: true, seen: user.seen});
+                        });
+                    }
+                    else {
+                        res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:string2, tag:string3, show: false});
+                   }
+                    // res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+                }
+            })
+        })
+        
+    }
+    else if(req.query.search && req.query.tag){
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        var ebook_data = Ebook.find({title: regex, tag: req.query.tag});
+        var ebookData = Ebook.find({title: regex, tag: req.query.tag})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+        ebookData.exec(function(err, data){
+            ebook_data.count().exec(function(err, count){
+                if(err) console.log(err);
+                else {
+                    var string = encodeURIComponent(req.query.search);
+                    var string2 = encodeURIComponent(req.query.tag);
+                    if(req.isAuthenticated()) {
+                        User.findById(req.user._id, function(err, user){
+                            if(err) console.log(err);
+                            res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:"all", tag:string2, show: true, seen: user.seen});
+                        });
+                    }
+                    else {
+                        res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:"all", tag:string2, show: false});
+                   }
+                    // res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+                }
+            })
+        })
+        
+    }
+    else if(req.query.search && req.query.branch){
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        var ebook_data = Ebook.find({title: regex, branch: req.query.branch});
+        var ebookData = Ebook.find({title: regex, branch: req.query.branch})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+        ebookData.exec(function(err, data){
+            ebook_data.count().exec(function(err, count){
+                if(err) console.log(err);
+                else {
+                    var string = encodeURIComponent(req.query.search);
+                    var string2 = encodeURIComponent(req.query.branch);
+                    if(req.isAuthenticated()) {
+                        User.findById(req.user._id, function(err, user){
+                            if(err) console.log(err);
+                            res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:string2, tag:"oth", show: true, seen: user.seen});
+                        });
+                    }
+                    else {
+                        res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:string2, tag:"oth", show: false});
+                    }
+                    // res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+                }
+            })
+        })
+        
+    }
+    else if(req.query.tag && req.query.branch){
+        var ebook_data = Ebook.find({tag: req.query.tag, branch: req.query.branch});
+        var ebookData = Ebook.find({tag: req.query.tag, branch: req.query.branch})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+        ebookData.exec(function(err, data){
+            ebook_data.count().exec(function(err, count){
+                if(err) console.log(err);
+                else {
+                    var string = encodeURIComponent(req.query.tag);
+                    var string2 = encodeURIComponent(req.query.branch);
+                    if(req.isAuthenticated()) {
+                        User.findById(req.user._id, function(err, user){
+                            if(err) console.log(err);
+                            res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: "", branch:string2, tag: string, show: true, seen: user.seen});
+                        });
+                    }
+                    else {
+                        res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: "", branch:string2, tag:string, show: false});
+                    }
+                    // res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+                }
+            })
+        })
+    }
+    else if(req.query.branch){
+        var ebook_data = Ebook.find({branch: req.query.branch});
+        var ebookData = Ebook.find({branch: req.query.branch})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+        ebookData.exec(function(err, data){
+            ebook_data.count().exec(function(err, count){
+                if(err) console.log(err);
+                else {
+                    var string = encodeURIComponent(req.query.branch);
+                    if(req.isAuthenticated()) {
+                        User.findById(req.user._id, function(err, user){
+                            if(err) console.log(err);
+                            res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: "", branch: string, tag:"oth", show: true, seen: user.seen});
+                        });
+                    }
+                    else {
+                        res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: "", branch: string, tag:"oth", show: false});
+                   }
+                    // res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+                }
+            })
+        })
+    }
+    else if(req.query.tag){
+        var ebook_data = Ebook.find({tag: req.query.tag});
+        var ebookData = Ebook.find({tag: req.query.tag})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+        ebookData.exec(function(err, data){
+            ebook_data.count().exec(function(err, count){
+                if(err) console.log(err);
+                else {
+                    var string = encodeURIComponent(req.query.tag);
+                    if(req.isAuthenticated()) {
+                        User.findById(req.user._id, function(err, user){
+                            if(err) console.log(err);
+                            res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: "", branch: "all", tag:string, show: true, seen: user.seen});
+                        });
+                    }
+                    else {
+                        res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: "", branch:"all", tag:string, show: false});
+                   }
+                    // res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+                }
+            })
+        })
+    }
+    else if(req.query.search){
+        // Search query using escape search
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        var ebook_data = Ebook.find({title: regex});
+        var ebookData = Ebook.find({title: regex})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+        ebookData.exec(function(err, data){
+            ebook_data.count().exec(function(err, count){
+                if(err) console.log(err);
+                else {
+                    var string = encodeURIComponent(req.query.search);
+                    if(req.isAuthenticated()) {
+                        User.findById(req.user._id, function(err, user){
+                            if(err) console.log(err);
+                            res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch: "all", tag: "oth", show: true, seen: user.seen});
+                        });
+                    }
+                    else {
+                        res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch: "all", tag: "oth", branch:"all", tag:"oth", show: false});
+                   }
+                    // res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string});
+                }
+            })
+        })
+    }
+    else {
+        // Show all data from the database
+        var ebookData = Ebook.find({})
+        .skip((perPage * page) - perPage)
+        .limit(perPage);
+        ebookData.exec(function(err, data){
+            Ebook.count().exec(function(err, count){
+                if(err) console.log(err);
+                else {
+                    var string = "";
+                    if(req.isAuthenticated()) {
+                        User.findById(req.user._id, function(err, user){
+                            if(err) console.log(err);
+                            res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:"all", tag:"oth", show: true, seen: user.seen});
+                        });
+                    }
+                    else {
+                        res.render('ebookPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:"all", tag:"oth", show: false});
+                   }
+                }
+            })
+        })
+    }
 });
 
 app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
@@ -1115,7 +1359,7 @@ app.post('/ebooks', pdfupload.single('pdf_file'), async function(req, res) {
 	User.findById(req.user._id, function(err, user){
 		folderId = user.folder_id;
 		var fs = require("fs");
-		fs.access("https://drive.google.com/drive/u/4/folders/"+folderId, (err) => {
+		fs.access("https://drive.google.com/drive/folders/"+folderId, (err) => {
 		  if (err) {
 			user.folder_id = null;
 			user.save();
@@ -1433,6 +1677,13 @@ app.put('/ebooks/:id', pdfupload.single('pdf_file'), async function(req, res){
     let folderId;
     User.findById(req.user._id, function(err, user){
         folderId = user.folder_id;
+		var fs = require("fs");
+		fs.access("https://drive.google.com/drive/folders/"+folderId, (err) => {
+		  if (err) {
+			user.folder_id = null;
+			user.save();
+		  }
+		});
         if(user.folder_id == null) {
         var folderMetadata = {
             'name': 'BookEx',

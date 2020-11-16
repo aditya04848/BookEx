@@ -29,12 +29,12 @@
 		  /*background-image: url("https://mtp.ottawasafetycouncil.ca/wp-content/uploads/2017/12/pexels-photo-733856.png");*/
 
 		  /* Full height */
-		  height: 100%; 
+		  height: calc(100% + 60px); 
 
 		  /* Center and scale the image nicely */
 		  background-position: center;
 		  background-repeat: no-repeat;
-		  background-size: cover;
+		  background-size: inherit;
 		}
 		.bg-text {
 		  background-color: rgb(0,0,0); /* Fallback color */
@@ -92,6 +92,13 @@
 			box-shadow: 8px 12px 31px -10px #ab98ab;
 			transition: 0.7s ease;
 		}
+			
+			.tag{
+				display: inline-block;    margin: 0 20px; width: max-content;
+			}
+			.tag-btn{
+				display: inline-block;    margin: auto 20px;
+			}
 
 			
 		@keyframes scroll {
@@ -104,6 +111,7 @@
 		    font-size: 80px;
 		  }
 		}
+			
 
 		@media screen and (max-width: 600px) {
 		  .bg-text {
@@ -255,7 +263,7 @@
 				background-color:rgba(0, 0, 0, 0.5); 
 			}
 			.overpage {
-				 width: 400px;;
+				 width: 400px; margin:10% auto; 
 			}
 			.login-btn-left {
 				float:left;
@@ -272,10 +280,90 @@
 			.screen {
 				margin: 10% auto;
 			}
+			.row-au{
+				margin-right: 0;
+			}
+			.one{
+				margin: 20px auto 20px auto;
+			}
+			.two{
+				margin: 20px auto 20px auto;
+			}
+			.four{
+				margin: 20px auto 20px auto;
+			}
+			.five {
+				margin: 20px auto 20px auto;
+			}
+			.six{
+				margin: 20px auto 20px auto;
+			}
+			.seven{
+				margin: 20px auto 20px auto;
+			}
+			.eight{
+				margin: 20px auto 20px auto;
+			}
+			.nine{
+				margin: 20px auto 20px auto;
+			}
+			.ten{
+				margin: 20px auto 20px auto;
+			}
+			.eleven{
+				margin: 20px auto 20px auto;
+			}
+			.twelve{
+				margin: 20px auto 20px auto;
+			}
+			.thirteen{
+				margin: 20px auto 20px auto;
+			}
+			.fourteen{
+				margin: 20px auto 20px auto;
+			}
+			.fifteen{
+				margin: 20px auto 20px auto;
+			}
+			.seventeen{
+				margin: 20px auto 20px auto;
+			}
+			.eighteen{
+				margin: 20px auto 20px auto;
+			}
+			.twenty{
+				margin: 20px auto 20px auto;
+			}
+			.twentyone{
+				margin: 20px auto 20px auto;
+			}
+			
+			.accept{
+				margin: 20px 120px;
+			}
+			.delete{
+				margin: 20px 90px;
+			}
+			
+			.screen {
+				margin: 10% auto;
+				width: 700px;
+			}
+			.screen-rating {
+				margin: 10% auto;
+				width: 400px;
+			}
+			.tag2{
+				width:100%; 
+			}
+			.tag-form{
+				margin: 0 auto;
+			}
 			
 			@media only screen and (max-width: 600px) {
 				.landing {
-					background: none;
+				 	background: none;
+					height: 100%;
 				}
 				.bg-text {
 				  background-color: rgb(0,0,0); /* Fallback color */
@@ -285,6 +373,7 @@
 				  border: 10px solid #6c63ff;
 				  position: absolute;
 				  z-index: 2;
+					font-size: 44px;
 				  padding: 20px;
 				  text-align: center;
 				}
@@ -294,7 +383,7 @@
 				  color: #6c63ff;
 				  font-weight: 500;
 				  font-style: italic;
-		  		  font-size: 16px;
+		  		  font-size: 18px;
 				  position: absolute;
 				  z-index: 2;
 				  padding: 20px 5px;
@@ -331,6 +420,7 @@
 				}
 				.overpage {
 					width: 90vw;
+					margin: 30% auto;
 				}
 				.login-btn-left {
 					text-align: center;
@@ -350,6 +440,123 @@
 				.screen {
 					margin: 30% auto;
 					width: 90vw;
+				}
+				.screen-rating {
+					margin: 30% auto;
+					width: 90vw;
+				}
+				
+				.screen-buy {
+					margin: 30% auto;
+					width: 90vw;
+				}
+				.one{
+					order: 1;
+					margin: 20px;
+				}
+				.two{
+					order: 2;
+					margin: 20px;
+				}
+				.three{
+					order: 3;
+				}
+				.four{
+					order: 4;
+					margin: 20px;
+				}
+				.five {
+					order: 5;
+					margin: 20px;
+				}
+				.six{
+					order: 6;
+					margin: 20px;
+				}
+				.seven{
+					order: 7;
+					margin: 20px;
+				}
+				.eight{
+					order: 8;
+					margin: 20px;
+				}
+				.nine{
+					order: 9;
+					margin: 20px;
+				}
+				.ten{
+					order: 10;
+					margin: 20px;
+				}
+				.eleven{
+					order: 11;
+					margin: 20px;
+				}
+				.twelve{
+					order: 12;
+					margin: 20px;
+				}
+				.thirteen{
+					order: 13;
+					margin: 20px;
+				}
+				.fourteen{
+					order: 14;
+					margin: 20px;
+				}
+				.fifteen{
+					order: 15;
+					margin: 20px;
+				}
+				.sixteen{
+					order: 16;
+				}
+				.seventeen{
+					order: 17;
+					margin: 20px;
+				}
+				.eighteen{
+					order: 18;
+					margin: 20px;
+				}
+				.nineteen{
+					order: 19;
+				}
+				.tag-form{
+					margin: 20% auto;
+				}
+				.twenty{
+					order: 20;
+					margin: 20px;
+				}
+				.twentyone{
+					order: 21;
+					margin: 20px;
+				}
+				.row-au{
+					margin: 0 auto;
+					width: 100vw;
+				}
+			
+				.accept{
+					display: block;
+					margin: 20px auto;
+				}
+				.delete{
+					display: block;
+					margin: 20px auto;
+				}
+				.tag{
+					display: block;   
+					margin: 10px auto;
+					padding: 0;
+				}
+				.tag2{
+					width:90vw; 
+				}
+				.tag-btn{
+					display: block;    margin: auto auto;
 				}
 			}
 

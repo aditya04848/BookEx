@@ -100,6 +100,28 @@
 							<textarea class="form-control" name= "newBook[description]" id="InputDescription" placeholder="Description"></textarea>
 						</div>
 					</div>
+					<div class="form-group row" id="tag-div" style="display: none;">
+						<label for="inputTag" class="col-sm-2 col-form-label">Tag</label>
+						<div class="col">
+							<label class="radio-inline mx-2"><input type="radio" name="newBook[tag]" value = "cn"> College Notes</label>
+							<label class="radio-inline mx-2"><input type="radio" name="newBook[tag]" value = "pyq"> Previous Year Papers</label>
+							<label class="radio-inline mx-2"><input type="radio" name="newBook[tag]" value = "oth" checked> Others</label>
+							<!-- <button class="btn btn-sm btn-secondary col-lg-3 col-sm-12 my-1" style="width: fit-content; border-radius: 20px;" name="newBook[tag]" value="oth" type="button" onclick="cn_fn()" id="cn">College Notes</button>
+							<button class="btn btn-sm btn-secondary col-lg-4 col-sm-12 my-1" style="width: fit-content; border-radius: 20px;" name="newBook[tag]" value="oth" type="button" onclick="pyq_fn()" id="pyq">Previous Year Papers</button>
+							<button class="btn btn-sm btn-primary col-lg-3 col-sm-12 my-1" style="width: fit-content; border-radius: 20px;" name="newBook[tag]" value="oth" type="button" onclick="oth_fn()" id="oth">Others</button> -->
+						 </div>
+					</div>
+					<div class="form-group row" id="branch-div">
+						<label for="inputTag" class="col-sm-2 col-form-label">Branch</label>
+						<div class="col">
+							<label class="radio-inline mx-2"><input type="radio" name="newBook[branch]" value = "all" checked> All/None</label>
+							<label class="radio-inline mx-2"><input type="radio" name="newBook[branch]" value = "cse"> CSE</label>
+							<label class="radio-inline mx-2"><input type="radio" name="newBook[branch]" value = "ece"> ECE</label>
+							<label class="radio-inline mx-2"><input type="radio" name="newBook[branch]" value = "me"> ME</label>
+							<label class="radio-inline mx-2"><input type="radio" name="newBook[branch]" value = "ee"> EE</label>
+							<label class="radio-inline mx-2"><input type="radio" name="newBook[branch]" value = "ce"> CE</label>
+						</div>
+					</div>
 					<div class="form-group row" id="hard-div">
 						<label for="inputImage" class="col-sm-2 col-form-label">Image</label>
 						<div class="col">
@@ -125,10 +147,182 @@
 		var hard_btn = document.getElementById('hard');
 		var pdf_btn = document.getElementById('pdf');
 		var misc_btn = document.getElementById('misc');
+		var tag_div = document.getElementById('tag-div');
+		var branch_div = document.getElementById('branch-div');
 		var file = document.getElementById('hard-div');
 		var url = document.getElementById('pdf-div');
 		var price = document.getElementById('price-div');
 		var author = document.getElementById('author');
+		var cse = document.getElementById('cse');
+		var ece = document.getElementById('ece');
+		var me = document.getElementById('me');
+		var ee = document.getElementById('ee');
+		var ce = document.getElementById('ce');
+		var oth = document.getElementById('oth');
+		var pyq = document.getElementById('pyq');
+		var all = document.getElementById('all');
+		var cn = document.getElementById('cn');
+		function cse_fn(){
+			cse.classList.add('btn-primary');
+			cse.classList.remove('btn-secondary');
+			ece.classList.remove('btn-primary');
+			ece.classList.add('btn-secondary');
+			me.classList.remove('btn-primary');
+			me.classList.add('btn-secondary');
+			ee.classList.remove('btn-primary');
+			ee.classList.add('btn-secondary');
+			ce.classList.remove('btn-primary');
+			ce.classList.add('btn-secondary');
+			all.classList.remove('btn-primary');
+			all.classList.add('btn-secondary');
+			cse.value = "cse";
+			ece.value = "cse";
+			me.value = "cse";
+			ee.value = "cse";
+			ce.value = "cse";
+			all.value = "cse";
+		}
+		function ece_fn(){
+			cse.classList.remove('btn-primary');
+			cse.classList.add('btn-secondary');
+			ece.classList.add('btn-primary');
+			ece.classList.remove('btn-secondary');
+			me.classList.remove('btn-primary');
+			me.classList.add('btn-secondary');
+			ee.classList.remove('btn-primary');
+			ee.classList.add('btn-secondary');
+			ce.classList.remove('btn-primary');
+			ce.classList.add('btn-secondary');
+			all.classList.remove('btn-primary');
+			all.classList.add('btn-secondary');
+			cse.value = "ece";
+			ece.value = "ece";
+			me.value = "ece";
+			ee.value = "ece";
+			ce.value = "ece";
+			all.value = "ece";
+			
+		}
+		function cn_fn(){
+			cn.classList.add('btn-primary');
+			cn.classList.remove('btn-secondary');
+			pyq.classList.remove('btn-primary');
+			pyq.classList.add('btn-secondary');
+			oth.classList.remove('btn-primary');
+			oth.classList.add('btn-secondary');
+			cn.value = "cn";
+			oth.value = "cn";
+			pyq.value = "cn";
+			
+		}
+		function me_fn(){
+			cse.classList.remove('btn-primary');
+			cse.classList.add('btn-secondary');
+			ece.classList.remove('btn-primary');
+			ece.classList.add('btn-secondary');
+			me.classList.add('btn-primary');
+			me.classList.remove('btn-secondary');
+			ee.classList.remove('btn-primary');
+			ee.classList.add('btn-secondary');
+			ce.classList.remove('btn-primary');
+			ce.classList.add('btn-secondary');
+			all.classList.remove('btn-primary');
+			all.classList.add('btn-secondary');
+			cse.value = "me";
+			ece.value = "me";
+			me.value = "me";
+			ee.value = "me";
+			ce.value = "me";
+			all.value = "me";
+			
+		}
+		function ee_fn(){
+			cse.classList.remove('btn-primary');
+			cse.classList.add('btn-secondary');
+			ece.classList.remove('btn-primary');
+			ece.classList.add('btn-secondary');
+			me.classList.remove('btn-primary');
+			me.classList.add('btn-secondary');
+			ee.classList.add('btn-primary');
+			ee.classList.remove('btn-secondary');
+			ce.classList.remove('btn-primary');
+			ce.classList.add('btn-secondary');
+			all.classList.remove('btn-primary');
+			all.classList.add('btn-secondary');
+			cse.value = "ee";
+			ece.value = "ee";
+			me.value = "ee";
+			ee.value = "ee";
+			ce.value = "ee";
+			all.value = "ee";
+			
+		}
+		function ce_fn(){
+			cse.classList.remove('btn-primary');
+			cse.classList.add('btn-secondary');
+			ece.classList.remove('btn-primary');
+			ece.classList.add('btn-secondary');
+			me.classList.remove('btn-primary');
+			me.classList.add('btn-secondary');
+			ee.classList.remove('btn-primary');
+			ee.classList.add('btn-secondary');
+			ce.classList.add('btn-primary');
+			ce.classList.remove('btn-secondary');
+			all.classList.remove('btn-primary');
+			all.classList.add('btn-secondary');
+			cse.value = "ce";
+			ece.value = "ce";
+			me.value = "ce";
+			ee.value = "ce";
+			ce.value = "ce";
+			all.value = "ce";
+			
+		}
+		function all_fn(){
+			cse.classList.remove('btn-primary');
+			cse.classList.add('btn-secondary');
+			ece.classList.remove('btn-primary');
+			ece.classList.add('btn-secondary');
+			me.classList.remove('btn-primary');
+			me.classList.add('btn-secondary');
+			ee.classList.remove('btn-primary');
+			ee.classList.add('btn-secondary');
+			ce.classList.remove('btn-primary');
+			ce.classList.add('btn-secondary');
+			all.classList.add('btn-primary');
+			all.classList.remove('btn-secondary');
+			cse.value = "all";
+			ece.value = "all";
+			me.value = "all";
+			ee.value = "all";
+			ce.value = "all";
+			all.value = "all";
+			
+		}
+		function oth_fn(){
+			cn.classList.remove('btn-primary');
+			cn.classList.add('btn-secondary');
+			pyq.classList.remove('btn-primary');
+			pyq.classList.add('btn-secondary');
+			oth.classList.add('btn-primary');
+			oth.classList.remove('btn-secondary');
+			cn.value = "oth";
+			oth.value = "oth";
+			pyq.value = "oth";
+			
+		}
+		function pyq_fn(){
+			cn.classList.remove('btn-primary');
+			cn.classList.add('btn-secondary');
+			pyq.classList.add('btn-primary');
+			pyq.classList.remove('btn-secondary');
+			oth.classList.remove('btn-primary');
+			oth.classList.add('btn-secondary');
+			cn.value = "pyq";
+			oth.value = "pyq";
+			pyq.value = "pyq";
+			
+		}
 		function hard_fn() {
 			hard_btn.classList.add('btn-primary');
 			hard_btn.classList.remove('btn-secondary');
@@ -140,6 +334,8 @@
 			url.style.display = "none";
 			price.style.display = "flex";
 			author.style.display = "flex";
+			branch_div.style.display = "flex";
+			tag_div.style.display = "none";
 			document['form-book-fill'].action = "/books";
 		}
 		function pdf_fn()
@@ -154,6 +350,9 @@
 			url.style.display = "flex";
 			author.style.display = "flex";
 			price.style.display = "none";
+			branch_div.style.display = "flex";
+			tag_div.style.display = "flex";
+
 			document['form-book-fill'].action = "/ebooks";
 		}
 		function misc_fn()
@@ -168,6 +367,9 @@
 			author.style.display = "none";
 			url.style.display = "none";
 			price.style.display = "flex";
+			branch_div.style.display = "none";
+			tag_div.style.display = "none";
+
 			document['form-book-fill'].action = "/misc";
 		}
 	</script>

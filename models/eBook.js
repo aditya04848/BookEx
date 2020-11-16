@@ -8,6 +8,8 @@ var eBookSchema = new mongoose.Schema({
 	price: String,
 	file_id: String,
 	is_display: {type: Boolean, default: false},
+	branch: String,
+	tag: String,
 	ratings: [
 		{
 			 type: mongoose.Schema.Types.ObjectId,

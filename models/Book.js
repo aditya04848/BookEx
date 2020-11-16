@@ -9,6 +9,7 @@ var BookSchema=new mongoose.Schema({
 	imageId: String,
 	uploader : String,
 	is_display: {type: Boolean, default: false},
+	branch: String,
 	// comments: [
 	// 	{
 	// 		 type: mongoose.Schema.Types.ObjectId,
