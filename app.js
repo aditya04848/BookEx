@@ -367,7 +367,7 @@ app.get('/books/page/:page',function(req, res){
 					if(req.isAuthenticated()) {
 						User.findById(req.user._id, function(err, user){
 							if(err) console.log(err);
-							res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
+							res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:"all", show: true, seen: user.seen});
 						});
 					}
 					else {
@@ -418,7 +418,7 @@ app.get('/books/page/:page',function(req, res){
 					if(req.isAuthenticated()) {
 						User.findById(req.user._id, function(err, user){
 							if(err) console.log(err);
-							res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, show: true, seen: user.seen});
+							res.render('mainPage', {records: data, current: page, pages: Math.ceil(count/perPage), query: string, branch:"all", show: true, seen: user.seen});
 						});
 					}
 					else {
