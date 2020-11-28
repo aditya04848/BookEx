@@ -56,3 +56,6 @@
 
 -   [Aditya Anand](https://github.com/aditya04848)
 -   [Atul Singh](https://github.com/AtulSingh72)
+
+
+##### For more details and usage-guidlines or to  submit your feedbacks, [Visit Here](http://book-exchnge.herokuapp.com/about-us).
