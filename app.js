@@ -1,7 +1,7 @@
 //=====REQUIRE STATEMENTS======
 var express                     = require("express"),
     app                         = express(),
-    session						= require('express-session'),
+    session			= require('express-session'),
     mongoose                    = require("mongoose"),
     multer                      = require("multer"),
     path                        = require("path"),
