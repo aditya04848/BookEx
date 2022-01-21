@@ -31,7 +31,7 @@ var express                     = require("express"),
 	notif						= require('./models/notif'),
 	Feed						= require('./models/feedback'),
 	async 						= require('async');
-mongoose.connect("mongodb+srv://BookEx:7230429adi@cluster0.fcnj1.mongodb.net/ualu_app?retryWrites=true&w=majority",{useUnifiedTopology:true, useNewUrlParser:true});
+mongoose.connect("mongodb+srv://BookEx:Password@cluster0.fcnj1.mongodb.net/ualu_app?retryWrites=true&w=majority",{useUnifiedTopology:true, useNewUrlParser:true});
 app.use(express.static("assets"));
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
